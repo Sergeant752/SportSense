@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication.utils
+package mobappdev.example.sportsense.utils
 
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter

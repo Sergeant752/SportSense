@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication.ui.theme
+package mobappdev.example.sportsense.ui.theme
 
 import android.app.Activity
 import android.os.Build

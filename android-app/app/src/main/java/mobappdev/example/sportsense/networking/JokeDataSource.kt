@@ -1,13 +1,13 @@
-package mobappdev.example.apiapplication.networking
+package mobappdev.example.sportsense.networking
 
 import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import mobappdev.example.apiapplication.data.Joke
+import mobappdev.example.sportsense.data.Joke
 import java.net.HttpURLConnection
 import java.net.URL
-import mobappdev.example.apiapplication.utils.Result
+import mobappdev.example.sportsense.utils.Result
 
 object JokeDataSource {
     private const val BASE_URL = "https://v2.jokeapi.dev/joke/Any?blacklistFlags=nsfw,religious,racist,sexist"

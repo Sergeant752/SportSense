@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication.ui.viewmodels
+package mobappdev.example.sportsense.ui.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -8,10 +8,10 @@ import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import mobappdev.example.apiapplication.data.JokeStorage
-import mobappdev.example.apiapplication.networking.JokeDataSource
-import mobappdev.example.apiapplication.utils.Result
-import mobappdev.example.apiapplication.utils.localDateToString
+import mobappdev.example.sportsense.data.JokeStorage
+import mobappdev.example.sportsense.networking.JokeDataSource
+import mobappdev.example.sportsense.utils.Result
+import mobappdev.example.sportsense.utils.localDateToString
 import java.time.LocalDate
 
 

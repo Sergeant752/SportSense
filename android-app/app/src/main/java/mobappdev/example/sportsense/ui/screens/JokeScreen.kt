@@ -1,8 +1,6 @@
-package mobappdev.example.apiapplication.ui.screens
+package mobappdev.example.sportsense.ui.screens
 
-import android.app.Application
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,9 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
-import mobappdev.example.apiapplication.ui.viewmodels.JokeVM
+import mobappdev.example.sportsense.ui.viewmodels.JokeVM
 
 @Composable
 fun JokeScreen(

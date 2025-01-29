@@ -1,8 +1,8 @@
-package mobappdev.example.apiapplication.data
+package mobappdev.example.sportsense.data
 import android.content.Context
 import android.content.SharedPreferences
 import androidx.core.content.edit
-import mobappdev.example.apiapplication.utils.localDateToString
+import mobappdev.example.sportsense.utils.localDateToString
 import java.time.LocalDate
 
 object JokeStorage {

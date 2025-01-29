@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication
+package mobappdev.example.sportsense
 
 import org.junit.Test
 

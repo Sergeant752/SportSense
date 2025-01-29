@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication.ui.theme
+package mobappdev.example.sportsense.ui.theme
 
 import androidx.compose.ui.graphics.Color
 

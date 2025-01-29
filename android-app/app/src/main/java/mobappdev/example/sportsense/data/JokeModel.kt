@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication.data
+package mobappdev.example.sportsense.data
 
 data class Joke(
     val error: Boolean,

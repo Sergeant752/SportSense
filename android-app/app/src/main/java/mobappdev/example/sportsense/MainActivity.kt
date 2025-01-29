@@ -1,4 +1,4 @@
-package mobappdev.example.apiapplication
+package mobappdev.example.sportsense
 
 import android.os.Bundle
 import androidx.activity.ComponentActivity
@@ -10,9 +10,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import mobappdev.example.apiapplication.ui.screens.JokeScreen
-import mobappdev.example.apiapplication.ui.theme.JokeGeneratorTheme
-import mobappdev.example.apiapplication.ui.viewmodels.JokeVM
+import mobappdev.example.sportsense.ui.screens.JokeScreen
+import mobappdev.example.sportsense.ui.theme.JokeGeneratorTheme
+import mobappdev.example.sportsense.ui.viewmodels.JokeVM
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
