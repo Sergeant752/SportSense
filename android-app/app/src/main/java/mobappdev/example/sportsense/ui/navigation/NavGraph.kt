@@ -1,12 +1,12 @@
 package mobappdev.example.sportsense.ui.navigation
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
-import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
-import mobappdev.example.sportsense.ui.screens.HistoryScreen
-import mobappdev.example.sportsense.ui.screens.MainScreen
-import mobappdev.example.sportsense.ui.screens.SettingsScreen
+import androidx.navigation.compose.NavHost
+import mobappdev.example.sportsense.ui.screens.*
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
@@ -15,8 +15,22 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
         navController = navController,
         startDestination = "home"
     ) {
-        composable("home") { MainScreen(vm = sensorVM) }
-        composable("history") { HistoryScreen() }
-        composable("settings") { SettingsScreen() }
+        composable(
+            "home",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { MainScreen(vm = sensorVM) }
+
+        composable(
+            "history",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { HistoryScreen() }
+
+        composable(
+            "settings",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { SettingsScreen() }
     }
 }
