@@ -17,10 +17,16 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
-import mobappdev.example.sportsense.ui.theme.*
+
+// Färger för ikonerna
+val HomeColor = Color(0xFFFFEB3B)  // Gul
+val HistoryColor = Color(0xFF9C27B0)  // Lila
+val SettingsColor = Color(0xFF4CAF50)  // Grön
+val DividerColor = Color.White // Vita streck mellan ikonerna
+val BottomNavBackground = Color(0xFF0D47A1) // Blå bakgrund
 
 sealed class Screen(val route: String, val icon: ImageVector, val label: String, val color: Color) {
-    object Home : Screen("home", Icons.Filled.Home, "Home", LiveDataColor)
+    object Home : Screen("home", Icons.Filled.Home, "Home", HomeColor)
     object History : Screen("history", Icons.Filled.History, "History", HistoryColor)
     object Settings : Screen("settings", Icons.Filled.Settings, "Settings", SettingsColor)
 }
@@ -30,33 +36,57 @@ fun BottomNavBar(navController: NavController) {
     var selectedRoute by remember { mutableStateOf("home") }
 
     NavigationBar(
-        containerColor = Color(0xFF1E1E1E), // Mörkgrå navbar
+        containerColor = BottomNavBackground, // Blå bakgrund på navbar
         tonalElevation = 8.dp,
         modifier = Modifier.fillMaxWidth()
     ) {
         val items = listOf(Screen.Home, Screen.History, Screen.Settings)
 
-        items.forEach { screen ->
+        items.forEachIndexed { index, screen ->
             val isSelected = screen.route == selectedRoute
             val animatedSize = animateFloatAsState(if (isSelected) 1.2f else 1f)
             val animatedColor = animateColorAsState(if (isSelected) screen.color else screen.color.copy(alpha = 0.6f))
 
-            NavigationBarItem(
-                icon = {
-                    Icon(
-                        screen.icon,
-                        contentDescription = screen.label,
-                        tint = animatedColor.value,
-                        modifier = Modifier.scale(animatedSize.value) // Skala ikonen vid val
-                    )
-                },
-                label = { Text(screen.label) },
-                selected = isSelected,
-                onClick = {
-                    selectedRoute = screen.route
-                    navController.navigate(screen.route)
-                }
-            )
+            Row(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .weight(1f)
+                    .background(BottomNavBackground) // Bakgrundsfärg behålls
+            ) {
+                NavigationBarItem(
+                    icon = {
+                        Icon(
+                            screen.icon,
+                            contentDescription = screen.label,
+                            tint = animatedColor.value.copy(alpha = if (isSelected) 1f else 0.8f), // Förbättra synligheten
+                            modifier = Modifier.scale(animatedSize.value)
+                        )
+                    },
+                    label = {
+                        Text(
+                            screen.label,
+                            color = Color.White // Ändrar textfärgen till vit
+                        )
+                    },
+                    selected = isSelected,
+                    onClick = {
+                        selectedRoute = screen.route
+                        navController.navigate(screen.route)
+                    }
+                )
+
+            }
+
+            // Lägg till vita streck mellan ikonerna
+            if (index < items.size - 1) {
+                Divider(
+                    color = DividerColor,
+                    modifier = Modifier
+                        .height(24.dp)
+                        .width(1.dp)
+                        .align(Alignment.CenterVertically)
+                )
+            }
         }
     }
 }
