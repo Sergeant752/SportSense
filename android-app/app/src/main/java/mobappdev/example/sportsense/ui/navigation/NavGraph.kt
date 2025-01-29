@@ -13,9 +13,9 @@ import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
     NavHost(
         navController = navController,
-        startDestination = "live_data"
+        startDestination = "home"
     ) {
-        composable("live_data") { MainScreen(vm = sensorVM) }
+        composable("home") { MainScreen(vm = sensorVM) }
         composable("history") { HistoryScreen() }
         composable("settings") { SettingsScreen() }
     }

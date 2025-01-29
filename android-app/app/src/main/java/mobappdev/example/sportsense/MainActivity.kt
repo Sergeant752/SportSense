@@ -11,21 +11,24 @@ import androidx.navigation.compose.rememberNavController
 import mobappdev.example.sportsense.ui.components.BottomNavBar
 import mobappdev.example.sportsense.ui.components.TopBar
 import mobappdev.example.sportsense.ui.navigation.NavGraph
+import mobappdev.example.sportsense.ui.theme.AppTheme
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            val sensorViewModel = SensorVM(application = application)
-            val navController = rememberNavController()
+            AppTheme {  // Använder vårt mörkblåa tema nu!
+                val sensorViewModel = SensorVM(application = application)
+                val navController = rememberNavController()
 
-            Scaffold(
-                topBar = { TopBar(title = "SportSense") },
-                bottomBar = { BottomNavBar(navController) }
-            ) { innerPadding ->
-                Box(modifier = Modifier.padding(innerPadding)) {
-                    NavGraph(navController = navController, sensorVM = sensorViewModel)
+                Scaffold(
+                    topBar = { TopBar(title = "SportSense") },
+                    bottomBar = { BottomNavBar(navController) }
+                ) { innerPadding ->
+                    Box(modifier = Modifier.padding(innerPadding)) {
+                        NavGraph(navController = navController, sensorVM = sensorViewModel)
+                    }
                 }
             }
         }
