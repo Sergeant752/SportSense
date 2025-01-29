@@ -4,11 +4,11 @@ plugins {
 }
 
 android {
-    namespace 'mobappdev.example.apiapplication'
+    namespace 'mobappdev.example.sportsense'
     compileSdk 34
 
     defaultConfig {
-        applicationId "mobappdev.example.apiapplication"
+        applicationId "mobappdev.example.sportsense"
         minSdk 26
         targetSdk 34
         versionCode 1
