@@ -3,27 +3,31 @@ package mobappdev.example.sportsense
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
-import mobappdev.example.sportsense.ui.screens.MainScreen
+import androidx.navigation.compose.rememberNavController
+import mobappdev.example.sportsense.ui.components.BottomNavBar
+import mobappdev.example.sportsense.ui.components.TopBar
+import mobappdev.example.sportsense.ui.navigation.NavGraph
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            MaterialTheme {
-                Surface(
-                    modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
-                ) {
-                    val sensorViewModel = SensorVM(application = application)
-                    MainScreen(vm = sensorViewModel)
+            val sensorViewModel = SensorVM(application = application)
+            val navController = rememberNavController()
+
+            Scaffold(
+                topBar = { TopBar(title = "SportSense") },
+                bottomBar = { BottomNavBar(navController) }
+            ) { innerPadding ->
+                Box(modifier = Modifier.padding(innerPadding)) {
+                    NavGraph(navController = navController, sensorVM = sensorViewModel)
                 }
             }
         }
     }
 }
-
