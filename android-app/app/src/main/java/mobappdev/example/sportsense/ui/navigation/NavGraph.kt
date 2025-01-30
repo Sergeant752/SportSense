@@ -19,13 +19,25 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             "home",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { MainScreen(vm = sensorVM) }
+        ) { MainScreen(vm = sensorVM, navController = navController) }
 
         composable(
             "history",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
         ) { HistoryScreen() }
+
+        composable(
+            "train_ai",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { TrainAIScreen() }
+
+        composable(
+            "import_model",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { ImportModelScreen() }
 
         composable(
             "settings",

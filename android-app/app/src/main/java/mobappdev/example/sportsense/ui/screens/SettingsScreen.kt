@@ -6,10 +6,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import mobappdev.example.sportsense.ui.theme.DarkSurface
 import mobappdev.example.sportsense.ui.theme.LightBlue40
-import mobappdev.example.sportsense.ui.theme.LightBlue80
 
 @Composable
 fun SettingsScreen() {

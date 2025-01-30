@@ -3,6 +3,11 @@ package mobappdev.example.sportsense.ui.screens
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material.icons.filled.Science
+import androidx.compose.material.icons.filled.Download
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -10,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
-fun MainScreen(vm: SensorVM) {
-    // Blå gradientbakgrund
+fun MainScreen(vm: SensorVM, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -35,18 +40,16 @@ fun MainScreen(vm: SensorVM) {
             Text(
                 text = "Sensor Data",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White // Gör texten vit för bättre kontrast
+                color = Color.White
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
             val sensorData = vm.sensorData.collectAsState()
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(16.dp),
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f)) // Semi-transparent vit bakgrund
+                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
             ) {
                 Column(
                     modifier = Modifier.padding(16.dp),
@@ -69,16 +72,49 @@ fun MainScreen(vm: SensorVM) {
                     )
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
+            ButtonWithIcon(
+                text = "History",
+                icon = Icons.Filled.History,
+                color = Color.Red,
+                onClick = { navController.navigate("history") }
+            )
+            ButtonWithIcon(
+                text = "Train AI Model",
+                icon = Icons.Filled.Science,
+                color = Color.Green,
+                onClick = { navController.navigate("train_ai") }
+            )
+            ButtonWithIcon(
+                text = "Import AI Model",
+                icon = Icons.Filled.Download,
+                color = Color.Cyan,
+                onClick = { navController.navigate("import_model") }
+            )
+            ButtonWithIcon(
+                text = "Settings",
+                icon = Icons.Filled.Settings,
+                color = Color.Yellow,
+                onClick = { navController.navigate("settings") }
+            )
+        }
+    }
+}
 
-            Button(
-                onClick = vm::fetchNewSensorData,
-                shape = RoundedCornerShape(8.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF1565C0)) // Djupare blå färg
-            ) {
-                Text(text = "Fetch Data", color = Color.White)
-            }
+@Composable
+fun ButtonWithIcon(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, color: Color, onClick: () -> Unit) {
+    Button(
+        onClick = onClick,
+        shape = RoundedCornerShape(8.dp),
+        colors = ButtonDefaults.buttonColors(containerColor = color),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 4.dp)
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            Icon(icon, contentDescription = text, tint = Color.Black)
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(text, color = Color.Black)
         }
     }
 }
