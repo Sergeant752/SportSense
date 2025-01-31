@@ -25,7 +25,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             "scan",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-            ) { ScanScreen(vm = sensorVM, navController = navController) } //
+        ) { ScanScreen(vm = sensorVM, navController = navController) }
 
         composable(
             "history",
@@ -50,5 +50,14 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
         ) { SettingsScreen() }
+
+        composable(
+            "hr_monitor/{deviceId}",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { backStackEntry ->
+            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
+            HRMonitorScreen(vm = sensorVM, navController = navController, deviceId = deviceId)
+        }
     }
 }

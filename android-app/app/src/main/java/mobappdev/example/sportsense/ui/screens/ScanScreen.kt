@@ -21,7 +21,6 @@ import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 fun ScanScreen(vm: SensorVM, navController: NavController) {
     var isScanning by remember { mutableStateOf(true) }
     val scannedDevices by vm.devices.collectAsState()
-    val connectedDevice by vm.connectedDevice.collectAsState()
 
     LaunchedEffect(Unit) {
         vm.startScanning()
@@ -70,7 +69,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                                     .clickable {
                                         val deviceId = device.substringAfter("(").substringBefore(")")
                                         vm.connectToDevice(deviceId)
-                                        navController.navigate("home")
+                                        navController.navigate("hr_monitor/$deviceId") // ✅ Navigerar till HRMonitorScreen
                                     },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.9f))
