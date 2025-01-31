@@ -1,13 +1,13 @@
 package mobappdev.example.sportsense.ui.screens
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.History
-import androidx.compose.material.icons.filled.Science
-import androidx.compose.material.icons.filled.Download
-import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -20,6 +20,8 @@ import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
 fun MainScreen(vm: SensorVM, navController: NavController) {
+    val scannedDevices by vm.devices.collectAsState()
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -42,55 +44,57 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
+
             Spacer(modifier = Modifier.height(16.dp))
-            val sensorData = vm.sensorData.collectAsState()
-            Card(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
-            ) {
-                Column(
-                    modifier = Modifier.padding(16.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
-                ) {
-                    Text(
-                        text = "Heart Rate: ${sensorData.value.heartRate}",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = "Accelerometer: ${sensorData.value.accelX}, ${sensorData.value.accelY}, ${sensorData.value.accelZ}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
-                    Text(
-                        text = "Gyroscope: ${sensorData.value.gyroX}, ${sensorData.value.gyroY}, ${sensorData.value.gyroZ}",
-                        style = MaterialTheme.typography.bodyMedium,
-                        color = Color.Black
-                    )
+
+            // Knapp för att starta scanning
+            Button(onClick = { vm.startScanning() }) {
+                Text("Start Scan")
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Lista över hittade enheter
+            LazyColumn {
+                items(scannedDevices) { device ->
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(8.dp)
+                            .clickable { vm.connectToDevice(device.split(" ")[1].removeSurrounding("(", ")")) },
+                        shape = RoundedCornerShape(12.dp),
+                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
+                    ) {
+                        Column(modifier = Modifier.padding(16.dp)) {
+                            Text(text = "Enhet: $device", style = MaterialTheme.typography.bodyLarge)
+                        }
+                    }
                 }
             }
+
             Spacer(modifier = Modifier.height(16.dp))
+
             ButtonWithIcon(
                 text = "History",
                 icon = Icons.Filled.History,
                 color = Color.Red,
                 onClick = { navController.navigate("history") }
             )
+
             ButtonWithIcon(
                 text = "Train AI Model",
                 icon = Icons.Filled.Science,
                 color = Color.Green,
                 onClick = { navController.navigate("train_ai") }
             )
+
             ButtonWithIcon(
                 text = "Import AI Model",
                 icon = Icons.Filled.Download,
                 color = Color.Cyan,
                 onClick = { navController.navigate("import_model") }
             )
+
             ButtonWithIcon(
                 text = "Settings",
                 icon = Icons.Filled.Settings,

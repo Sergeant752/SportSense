@@ -15,7 +15,7 @@ import io.reactivex.rxjava3.disposables.Disposable
 
 class BluetoothManager(private val context: Context) {
 
-    private val api: PolarBleApi = PolarBleApiDefaultImpl.defaultImplementation(
+    val api: PolarBleApi = PolarBleApiDefaultImpl.defaultImplementation(
         context,
         PolarBleApi.ALL_FEATURES // FIX: Ersätter `FEATURE_ALL`
     )
@@ -54,7 +54,7 @@ class BluetoothManager(private val context: Context) {
             .map { hrSample: PolarHrData -> hrSample.hr } // FIX: Specifierar datatypen korrekt
             .doOnSubscribe { Log.d("BluetoothManager", "HR Stream started") }
     }
-    
+
      */
 
     fun requestPermissions(activity: android.app.Activity, requestCode: Int) {
