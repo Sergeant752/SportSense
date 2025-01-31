@@ -16,22 +16,23 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
     private val _sensorData = MutableStateFlow(SensorData(0, 0, 0f, 0f, 0f, 0f, 0f, 0f))
     val sensorData: StateFlow<SensorData> = _sensorData.asStateFlow()
 
-    private val _devices = MutableStateFlow<List<String>>(emptyList()) // Lista för enheter
-    val devices: StateFlow<List<String>> = _devices.asStateFlow()
+    val devices: StateFlow<List<String>> = bluetoothManager.scannedDevices
+    val heartRate: StateFlow<Int> = bluetoothManager.heartRate
+    val connectedDevice: StateFlow<String?> = bluetoothManager.connectedDevice
 
     fun startScanning() {
-        bluetoothManager.api.searchForDevice()
-            .subscribe(
-                { deviceInfo ->
-                    val newDevice = "${deviceInfo.name} (${deviceInfo.deviceId})"
-                    _devices.value = _devices.value + newDevice
-                    Log.d("SensorVM", "Hittade enhet: $newDevice")
-                },
-                { error -> Log.e("SensorVM", "Scanning error: ${error.message}") }
-            )
+        bluetoothManager.startScan()
     }
 
     fun connectToDevice(deviceId: String) {
         bluetoothManager.connectToDevice(deviceId)
+    }
+
+    fun startHeartRateMeasurement() {
+        bluetoothManager.startHeartRateMeasurement()
+    }
+
+    fun stopHeartRateMeasurement() {
+        bluetoothManager.stopHeartRateMeasurement()
     }
 }

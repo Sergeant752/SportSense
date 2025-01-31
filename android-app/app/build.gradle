@@ -77,7 +77,7 @@ dependencies {
     implementation "androidx.compose.ui:ui-tooling-preview:1.5.0"
     implementation "androidx.compose.animation:animation:1.5.0"
 
-    implementation("com.github.polarofficial:polar-ble-sdk:3.3.0") // Polar BLE SDK
+    implementation("com.github.polarofficial:polar-ble-sdk:5.13.0") // Polar BLE SDK
     implementation("io.reactivex.rxjava3:rxjava:3.1.6") // RxJava för hantering av async operationer
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2") // RxAndroid för att hantera UI-tråden
 }

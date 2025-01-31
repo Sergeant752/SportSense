@@ -21,17 +21,20 @@ import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 fun ScanScreen(vm: SensorVM, navController: NavController) {
     var isScanning by remember { mutableStateOf(true) }
     val scannedDevices by vm.devices.collectAsState()
+    val connectedDevice by vm.connectedDevice.collectAsState()
+
     LaunchedEffect(Unit) {
         vm.startScanning()
         delay(3000) // Simulera scanningstid
         isScanning = false
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6)) // Gradient från mörkblå till ljusblå
+                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -44,11 +47,14 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = if (isScanning) "Scanning for Devices..." else if (scannedDevices.isNotEmpty()) "Device found!" else "No devices found",
+                text = if (isScanning) "Scanning for Devices..."
+                else if (scannedDevices.isNotEmpty()) "Device found!"
+                else "No devices found",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             if (isScanning) {
                 CircularProgressIndicator(color = Color.White)
             } else {
@@ -62,17 +68,18 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                                     .fillMaxWidth()
                                     .padding(8.dp)
                                     .clickable {
-                                        vm.connectToDevice(device.split(" ")[1].removeSurrounding("(", ")"))
-                                        navController.navigate("home") // ✅ Navigera tillbaka vid anslutning
+                                        val deviceId = device.substringAfter("(").substringBefore(")")
+                                        vm.connectToDevice(deviceId)
+                                        navController.navigate("home")
                                     },
                                 shape = RoundedCornerShape(12.dp),
-                                colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.9f)) // Bakgrund blir blå
+                                colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.9f))
                             ) {
                                 Column(modifier = Modifier.padding(16.dp)) {
                                     Text(
                                         text = "Device: $device",
                                         style = MaterialTheme.typography.bodyLarge,
-                                        color = Color.White // Texten blir vit
+                                        color = Color.White
                                     )
                                 }
                             }

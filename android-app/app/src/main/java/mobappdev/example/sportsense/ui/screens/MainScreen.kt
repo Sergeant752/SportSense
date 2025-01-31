@@ -21,13 +21,15 @@ import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 @Composable
 fun MainScreen(vm: SensorVM, navController: NavController) {
     val scannedDevices by vm.devices.collectAsState()
+    val heartRate by vm.heartRate.collectAsState()
+    val connectedDevice by vm.connectedDevice.collectAsState()
 
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6)) // Gradient från mörkblå till ljusblå
+                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -45,30 +47,36 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
-            Button(onClick = { navController.navigate("scan") }) {
-                Text("Start Scan")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            LazyColumn {
-                items(scannedDevices) { device ->
-                    Card(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(8.dp)
-                            .clickable { vm.connectToDevice(device.split(" ")[1].removeSurrounding("(", ")")) },
-                        shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.9f))
-                    ) {
-                        Column(modifier = Modifier.padding(16.dp)) {
-                            Text(
-                                text = "Enhet: $device",
-                                style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White // Här ändrar du textfärgen till vit
-                            )
-                        }
-                    }
+
+            if (connectedDevice == null) {
+                Button(onClick = { navController.navigate("scan") }) {
+                    Text("Start Scan")
                 }
+            } else {
+                Text(
+                    text = "Connected to: $connectedDevice",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+
+                Button(onClick = { vm.startHeartRateMeasurement() }) {
+                    Text("Start HR Measurement")
+                }
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Button(onClick = { vm.stopHeartRateMeasurement() }) {
+                    Text("Stop HR Measurement")
+                }
+
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    text = "Heart Rate: $heartRate BPM",
+                    style = MaterialTheme.typography.headlineMedium,
+                    color = Color.White
+                )
             }
+
             Spacer(modifier = Modifier.height(16.dp))
             ButtonWithIcon(
                 text = "History",
