@@ -22,6 +22,12 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
         ) { MainScreen(vm = sensorVM, navController = navController) }
 
         composable(
+            "scan",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+            ) { ScanScreen(vm = sensorVM, navController = navController) } //
+
+        composable(
             "history",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }

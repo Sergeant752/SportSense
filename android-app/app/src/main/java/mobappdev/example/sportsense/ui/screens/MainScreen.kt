@@ -44,17 +44,11 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Knapp för att starta scanning
-            Button(onClick = { vm.startScanning() }) {
+            Button(onClick = { navController.navigate("scan") }) {
                 Text("Start Scan")
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Lista över hittade enheter
             LazyColumn {
                 items(scannedDevices) { device ->
                     Card(
@@ -63,38 +57,37 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                             .padding(8.dp)
                             .clickable { vm.connectToDevice(device.split(" ")[1].removeSurrounding("(", ")")) },
                         shape = RoundedCornerShape(12.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
+                        colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.9f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = "Enhet: $device", style = MaterialTheme.typography.bodyLarge)
+                            Text(
+                                text = "Enhet: $device",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.White // Här ändrar du textfärgen till vit
+                            )
                         }
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
             ButtonWithIcon(
                 text = "History",
                 icon = Icons.Filled.History,
                 color = Color.Red,
                 onClick = { navController.navigate("history") }
             )
-
             ButtonWithIcon(
                 text = "Train AI Model",
                 icon = Icons.Filled.Science,
                 color = Color.Green,
                 onClick = { navController.navigate("train_ai") }
             )
-
             ButtonWithIcon(
                 text = "Import AI Model",
                 icon = Icons.Filled.Download,
                 color = Color.Cyan,
                 onClick = { navController.navigate("import_model") }
             )
-
             ButtonWithIcon(
                 text = "Settings",
                 icon = Icons.Filled.Settings,
