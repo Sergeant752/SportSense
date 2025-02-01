@@ -32,9 +32,7 @@ fun SettingsScreen() {
             style = MaterialTheme.typography.headlineSmall,
             color = Color.White
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         Card(
             modifier = Modifier.fillMaxWidth(),
             shape = MaterialTheme.shapes.medium,

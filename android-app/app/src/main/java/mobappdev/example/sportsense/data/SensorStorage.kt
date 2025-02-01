@@ -4,7 +4,6 @@ import android.content.Context
 import android.content.SharedPreferences
 import com.google.gson.Gson
 
-// Hantering av lagring och återställning av sensordata
 object SensorStorage {
     private const val PREFS_NAME = "SensorPrefs"
     private const val KEY_SENSOR_DATA = "saved_sensor_data"

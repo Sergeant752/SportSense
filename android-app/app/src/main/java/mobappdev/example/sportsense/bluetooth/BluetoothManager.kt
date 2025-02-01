@@ -96,7 +96,6 @@ class BluetoothManager(private val context: Context) {
 
     fun startAccelerometerMeasurement() {
         val deviceId = _connectedDevice.value ?: return
-
         accDisposable = api.startAccStreaming(deviceId, getDefaultSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -112,7 +111,6 @@ class BluetoothManager(private val context: Context) {
 
     fun startGyroscopeMeasurement() {
         val deviceId = _connectedDevice.value ?: return
-
         gyroDisposable = api.startGyroStreaming(deviceId, getDefaultSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(

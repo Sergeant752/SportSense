@@ -18,14 +18,11 @@ import java.util.*
 @Composable
 fun HistoryScreen() {
     val savedHRData = remember { mutableStateListOf<Pair<Int, String>>() }
-
-    // Simulerad sparad HR-data (här kan du koppla din faktiska datakälla)
     LaunchedEffect(Unit) {
         savedHRData.add(Pair(75, getCurrentTimestamp()))
         savedHRData.add(Pair(82, getCurrentTimestamp()))
         savedHRData.add(Pair(90, getCurrentTimestamp()))
     }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -38,9 +35,7 @@ fun HistoryScreen() {
             style = MaterialTheme.typography.headlineSmall,
             color = Color.White
         )
-
         Spacer(modifier = Modifier.height(16.dp))
-
         if (savedHRData.isEmpty()) {
             Text(text = "No HR data recorded", color = Color.White)
         } else {

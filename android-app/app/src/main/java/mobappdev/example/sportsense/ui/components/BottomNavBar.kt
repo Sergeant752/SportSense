@@ -18,7 +18,6 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 
-// Färger för ikonerna
 val HomeColor = Color(0xFFFFEB3B)  // Gul
 val HistoryColor = Color(0xFF9C27B0)  // Lila
 val SettingsColor = Color(0xFF4CAF50)  // Grön
@@ -76,8 +75,6 @@ fun BottomNavBar(navController: NavController) {
                 )
 
             }
-
-            // Lägg till vita streck mellan ikonerna
             if (index < items.size - 1) {
                 Divider(
                     color = DividerColor,

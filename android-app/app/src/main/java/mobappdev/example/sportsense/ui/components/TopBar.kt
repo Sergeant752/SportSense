@@ -1,8 +1,5 @@
 package mobappdev.example.sportsense.ui.components
 
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -21,7 +18,6 @@ import mobappdev.example.sportsense.ui.theme.DarkBlue
 fun TopBar(title: String) {
     var showBar by remember { mutableStateOf(false) }
 
-    // Fade in effekten vid start
     LaunchedEffect(Unit) {
         delay(300) // Vänta lite innan fade-in
         showBar = true
