@@ -8,5 +8,6 @@ data class SensorData(
     val accelZ: Float,
     val gyroX: Float,
     val gyroY: Float,
-    val gyroZ: Float
+    val gyroZ: Float,
+    val tag: String? = null
 )

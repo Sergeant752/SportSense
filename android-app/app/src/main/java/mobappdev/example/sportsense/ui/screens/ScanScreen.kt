@@ -1,5 +1,6 @@
 package mobappdev.example.sportsense.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -12,15 +13,19 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
+import mobappdev.example.sportsense.data.SensorStorage
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
 fun ScanScreen(vm: SensorVM, navController: NavController) {
     var isScanning by remember { mutableStateOf(true) }
     val scannedDevices by vm.devices.collectAsState()
+    val connectedDevices by vm.connectedDevices.collectAsState()
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
         vm.startScanning()
@@ -47,7 +52,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
         ) {
             Text(
                 text = if (isScanning) "Scanning for Devices..."
-                else if (scannedDevices.isNotEmpty()) "Device found!"
+                else if (scannedDevices.isNotEmpty()) "Devices Found!"
                 else "No devices found",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
@@ -69,7 +74,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                                     .clickable {
                                         val deviceId = device.substringAfter("(").substringBefore(")")
                                         vm.connectToDevice(deviceId)
-                                        navController.navigate("monitor/$deviceId") // ✅ Navigerar till HRMonitorScreen
+                                        navController.navigate("monitor/$deviceId")
                                     },
                                 shape = RoundedCornerShape(12.dp),
                                 colors = CardDefaults.cardColors(containerColor = Color.Blue.copy(alpha = 0.9f))
@@ -85,6 +90,44 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // ✅ Visar anslutna enheter
+            if (connectedDevices.isNotEmpty()) {
+                Text(
+                    text = "Connected devices: ${connectedDevices.joinToString()}",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.Yellow
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+            }
+
+            // ✅ Exportera data som CSV
+            Button(
+                onClick = {
+                    val path = SensorStorage.exportSensorDataAsCSV(context)
+                    Toast.makeText(context, "Data exported to CSV at $path", Toast.LENGTH_SHORT).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Export Data as CSV")
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ✅ Exportera data som JSON
+            Button(
+                onClick = {
+                    val path = SensorStorage.exportSensorDataAsJSON(context)
+                    Toast.makeText(context, "Data exported to JSON at $path", Toast.LENGTH_SHORT).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Export Data as JSON")
             }
         }
     }

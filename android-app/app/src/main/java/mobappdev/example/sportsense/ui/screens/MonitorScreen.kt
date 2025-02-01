@@ -51,30 +51,35 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
+
             Text(
                 text = "Heart Rate: ${heartRate} bpm",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "ACC (X:${sensorData.accelX}, Y:${sensorData.accelY}, Z:${sensorData.accelZ})",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
+
             Text(
                 text = "GYRO (X:${sensorData.gyroX}, Y:${sensorData.gyroY}, Z:${sensorData.gyroZ})",
                 style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
+
+            // ✅ HR Measurement
             Button(
                 onClick = {
                     if (isMeasuringHR) {
-                        vm.stopHeartRateMeasurement()
+                        vm.stopHeartRateMeasurement(deviceId)
                     } else {
-                        vm.startHeartRateMeasurement()
+                        vm.startHeartRateMeasurement(deviceId)
                     }
                     isMeasuringHR = !isMeasuringHR
                 },
@@ -86,12 +91,14 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text(if (isMeasuringHR) "Stop HR Measurement" else "Start HR Measurement")
             }
             Spacer(modifier = Modifier.height(12.dp))
+
+            // ✅ Accelerometer Measurement
             Button(
                 onClick = {
                     if (isMeasuringACC) {
-                        vm.stopAccelerometerMeasurement()
+                        vm.stopAccelerometerMeasurement(deviceId)
                     } else {
-                        vm.startAccelerometerMeasurement()
+                        vm.startAccelerometerMeasurement(deviceId)
                     }
                     isMeasuringACC = !isMeasuringACC
                 },
@@ -103,12 +110,14 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text(if (isMeasuringACC) "Stop ACC Measurement" else "Start ACC Measurement")
             }
             Spacer(modifier = Modifier.height(12.dp))
+
+            // ✅ Gyroscope Measurement
             Button(
                 onClick = {
                     if (isMeasuringGYRO) {
-                        vm.stopGyroscopeMeasurement()
+                        vm.stopGyroscopeMeasurement(deviceId)
                     } else {
-                        vm.startGyroscopeMeasurement()
+                        vm.startGyroscopeMeasurement(deviceId)
                     }
                     isMeasuringGYRO = !isMeasuringGYRO
                 },
@@ -120,6 +129,8 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text(if (isMeasuringGYRO) "Stop GYRO Measurement" else "Start GYRO Measurement")
             }
             Spacer(modifier = Modifier.height(16.dp))
+
+            // ✅ Stop All Measurements
             Button(
                 onClick = {
                     vm.stopAllMeasurements()
@@ -134,6 +145,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             }
             Spacer(modifier = Modifier.height(16.dp))
 
+            // ✅ Back Button
             Button(
                 onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),

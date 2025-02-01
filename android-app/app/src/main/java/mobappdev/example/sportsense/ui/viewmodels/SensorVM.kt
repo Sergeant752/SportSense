@@ -12,7 +12,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
 
     val devices: StateFlow<List<String>> = bluetoothManager.scannedDevices
     val heartRate: StateFlow<Int> = bluetoothManager.heartRate
-    val connectedDevice: StateFlow<String?> = bluetoothManager.connectedDevice
+    val connectedDevices: StateFlow<List<String>> = bluetoothManager.connectedDevices  // ✅ Lagt till för multisensorhantering
     val sensorData: StateFlow<SensorData> = bluetoothManager.sensorData
 
     fun startScanning() {
@@ -23,28 +23,29 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         bluetoothManager.connectToDevice(deviceId)
     }
 
-    fun startHeartRateMeasurement() {
-        bluetoothManager.startHeartRateMeasurement()
+    // ✅ Uppdaterade metoder för att stödja flera enheter
+    fun startHeartRateMeasurement(deviceId: String) {
+        bluetoothManager.startHeartRateMeasurement(deviceId)
     }
 
-    fun startAccelerometerMeasurement() {
-        bluetoothManager.startAccelerometerMeasurement()
+    fun startAccelerometerMeasurement(deviceId: String) {
+        bluetoothManager.startAccelerometerMeasurement(deviceId)
     }
 
-    fun startGyroscopeMeasurement() {
-        bluetoothManager.startGyroscopeMeasurement()
+    fun startGyroscopeMeasurement(deviceId: String) {
+        bluetoothManager.startGyroscopeMeasurement(deviceId)
     }
 
-    fun stopHeartRateMeasurement() {
-        bluetoothManager.stopHeartRateMeasurement()
+    fun stopHeartRateMeasurement(deviceId: String) {
+        bluetoothManager.stopHeartRateMeasurement(deviceId)
     }
 
-    fun stopAccelerometerMeasurement() {
-        bluetoothManager.stopAccelerometerMeasurement()
+    fun stopAccelerometerMeasurement(deviceId: String) {
+        bluetoothManager.stopAccelerometerMeasurement(deviceId)
     }
 
-    fun stopGyroscopeMeasurement() {
-        bluetoothManager.stopGyroscopeMeasurement()
+    fun stopGyroscopeMeasurement(deviceId: String) {
+        bluetoothManager.stopGyroscopeMeasurement(deviceId)
     }
 
     fun stopAllMeasurements() {

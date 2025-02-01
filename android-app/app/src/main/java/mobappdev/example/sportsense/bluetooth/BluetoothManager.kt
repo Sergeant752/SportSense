@@ -22,13 +22,13 @@ class BluetoothManager(private val context: Context) {
         setOf(
             PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO // Lägg till denna rad
+            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO
         )
     )
 
-    private var hrDisposable: Disposable? = null
-    private var accDisposable: Disposable? = null
-    private var gyroDisposable: Disposable? = null
+    private var hrDisposables = mutableMapOf<String, Disposable>()
+    private var accDisposables = mutableMapOf<String, Disposable>()
+    private var gyroDisposables = mutableMapOf<String, Disposable>()
 
     private val _heartRate = MutableStateFlow(0)
     val heartRate: StateFlow<Int> = _heartRate
@@ -36,8 +36,8 @@ class BluetoothManager(private val context: Context) {
     private val _sensorData = MutableStateFlow(SensorData(0, 0, 0f, 0f, 0f, 0f, 0f, 0f))
     val sensorData: StateFlow<SensorData> = _sensorData
 
-    private val _connectedDevice = MutableStateFlow<String?>(null)
-    val connectedDevice: StateFlow<String?> = _connectedDevice
+    private val _connectedDevices = MutableStateFlow<List<String>>(emptyList())
+    val connectedDevices: StateFlow<List<String>> = _connectedDevices
 
     private val _scannedDevices = MutableStateFlow<List<String>>(emptyList())
     val scannedDevices: StateFlow<List<String>> = _scannedDevices
@@ -48,13 +48,13 @@ class BluetoothManager(private val context: Context) {
         api.setApiCallback(object : PolarBleApiCallback() {
             override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
                 Log.d("BluetoothManager", "Connected: ${polarDeviceInfo.deviceId}")
-                _connectedDevice.value = polarDeviceInfo.deviceId
-                fetchAvailableGyroSettings()
+                _connectedDevices.value = _connectedDevices.value + polarDeviceInfo.deviceId
+                fetchAvailableGyroSettings(polarDeviceInfo.deviceId)
             }
 
             override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
                 Log.d("BluetoothManager", "Disconnected: ${polarDeviceInfo.deviceId}")
-                _connectedDevice.value = null
+                _connectedDevices.value = _connectedDevices.value - polarDeviceInfo.deviceId
             }
 
             override fun disInformationReceived(identifier: String, disInfo: DisInfo) {
@@ -64,9 +64,8 @@ class BluetoothManager(private val context: Context) {
             override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
                 Log.d("BluetoothManager", "Feature ready: $feature on device $identifier")
                 if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING) {
-                    Log.d("BluetoothManager", "Fetching GYRO settings after feature ready.")
-                    startGyroscopeMeasurement() // Starta gyro automatiskt när det är redo
-                    fetchAvailableGyroSettings()
+                    startGyroscopeMeasurement(identifier)
+                    fetchAvailableGyroSettings(identifier)
                 }
             }
         })
@@ -87,12 +86,11 @@ class BluetoothManager(private val context: Context) {
 
     fun connectToDevice(deviceId: String) {
         api.connectToDevice(deviceId)
+        _connectedDevices.value = _connectedDevices.value + deviceId
     }
 
-    fun startHeartRateMeasurement() {
-        val deviceId = _connectedDevice.value ?: return
-
-        hrDisposable = api.startHrStreaming(deviceId)
+    fun startHeartRateMeasurement(deviceId: String) {
+        hrDisposables[deviceId] = api.startHrStreaming(deviceId)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { hrData: PolarHrData ->
@@ -108,10 +106,8 @@ class BluetoothManager(private val context: Context) {
             )
     }
 
-    fun startAccelerometerMeasurement() {
-        val deviceId = _connectedDevice.value ?: return
-
-        accDisposable = api.startAccStreaming(deviceId, getDefaultSensorSettings())
+    fun startAccelerometerMeasurement(deviceId: String) {
+        accDisposables[deviceId] = api.startAccStreaming(deviceId, getDefaultSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { accData: PolarAccelerometerData ->
@@ -122,6 +118,9 @@ class BluetoothManager(private val context: Context) {
                                 accelY = sample.y.toFloat(),
                                 accelZ = sample.z.toFloat()
                             )
+                            if (detectKnocking(sample.x.toFloat(), sample.y.toFloat(), sample.z.toFloat())) {
+                                SensorStorage.saveSensorDataWithTag(context, _sensorData.value, "Knackning")
+                            }
                             Log.d("BluetoothManager", "ACC: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
                         }
                     }
@@ -130,9 +129,8 @@ class BluetoothManager(private val context: Context) {
             )
     }
 
-    fun startGyroscopeMeasurement() {
-        val deviceId = _connectedDevice.value ?: return
-        api.startGyroStreaming(deviceId, getGyroSensorSettings())
+    fun startGyroscopeMeasurement(deviceId: String) {
+        gyroDisposables[deviceId] = api.startGyroStreaming(deviceId, getGyroSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { gyroData: PolarGyroData ->
@@ -150,7 +148,7 @@ class BluetoothManager(private val context: Context) {
                 { error ->
                     if (error is com.polar.sdk.api.errors.PolarNotificationNotEnabled) {
                         Log.d("BluetoothManager", "Trying to enable notifications for gyro...")
-                        enableGyroNotification(deviceId)  // Lägg till denna rad
+                        enableGyroNotification(deviceId) // ✅ Lägger till anropet igen
                     } else {
                         Log.e("BluetoothManager", "GYRO stream failed: $error")
                     }
@@ -158,26 +156,44 @@ class BluetoothManager(private val context: Context) {
             )
     }
 
-    fun stopHeartRateMeasurement() {
-        hrDisposable?.dispose()
-        Log.d("BluetoothManager", "HR measurement stopped")
+    private fun enableGyroNotification(deviceId: String) {
+        api.startGyroStreaming(deviceId, getGyroSensorSettings())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.d("BluetoothManager", "Gyro notification enabled for device $deviceId") },
+                { error -> Log.e("BluetoothManager", "Failed to enable gyro notification: $error") }
+            )
     }
 
-    fun stopAccelerometerMeasurement() {
-        accDisposable?.dispose()
-        Log.d("BluetoothManager", "Accelerometer measurement stopped")
+    private fun detectKnocking(accelX: Float, accelY: Float, accelZ: Float): Boolean {
+        return accelZ > 15 // Tröskelvärde för att detektera knackningar
     }
 
-    fun stopGyroscopeMeasurement() {
-        gyroDisposable?.dispose()
-        Log.d("BluetoothManager", "Gyroscope measurement stopped")
+    fun stopHeartRateMeasurement(deviceId: String) {
+        hrDisposables[deviceId]?.dispose()
+        hrDisposables.remove(deviceId)
+        Log.d("BluetoothManager", "HR measurement stopped for device: $deviceId")
+    }
+
+    fun stopAccelerometerMeasurement(deviceId: String) {
+        accDisposables[deviceId]?.dispose()
+        accDisposables.remove(deviceId)
+        Log.d("BluetoothManager", "Accelerometer measurement stopped for device: $deviceId")
+    }
+
+    fun stopGyroscopeMeasurement(deviceId: String) {
+        gyroDisposables[deviceId]?.dispose()
+        gyroDisposables.remove(deviceId)
+        Log.d("BluetoothManager", "Gyroscope measurement stopped for device: $deviceId")
     }
 
     fun stopMeasurements() {
-        stopHeartRateMeasurement()
-        stopAccelerometerMeasurement()
-        stopGyroscopeMeasurement()
-        Log.d("BluetoothManager", "All measurements stopped")
+        _connectedDevices.value.forEach { deviceId ->
+            stopHeartRateMeasurement(deviceId)
+            stopAccelerometerMeasurement(deviceId)
+            stopGyroscopeMeasurement(deviceId)
+        }
+        Log.d("BluetoothManager", "All measurements stopped for all devices")
     }
 
     private fun saveSensorData(
@@ -220,26 +236,15 @@ class BluetoothManager(private val context: Context) {
     private fun getGyroSensorSettings(): PolarSensorSetting {
         return PolarSensorSetting(
             mapOf(
-                PolarSensorSetting.SettingType.SAMPLE_RATE to 52, // Testa med 100 Hz
-                PolarSensorSetting.SettingType.RESOLUTION to 16,   // Vanligtvis 16 bitar
-                PolarSensorSetting.SettingType.RANGE to 2000,      // Testa 2000 dps (grad/s)
-                PolarSensorSetting.SettingType.CHANNELS to 3       // 3 kanaler: X, Y, Z
+                PolarSensorSetting.SettingType.SAMPLE_RATE to 52,
+                PolarSensorSetting.SettingType.RESOLUTION to 16,
+                PolarSensorSetting.SettingType.RANGE to 2000,
+                PolarSensorSetting.SettingType.CHANNELS to 3
             )
         )
     }
 
-    private fun enableGyroNotification(deviceId: String) {
-        api.startGyroStreaming(deviceId, getGyroSensorSettings())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe(
-                { Log.d("BluetoothManager", "Gyro notification enabled for device $deviceId") },
-                { error -> Log.e("BluetoothManager", "Failed to enable gyro notification: $error") }
-            )
-    }
-
-    fun fetchAvailableGyroSettings() {
-        val deviceId = _connectedDevice.value ?: return
-        Log.d("BluetoothManager", "Fetching available GYRO settings for device: $deviceId")
+    fun fetchAvailableGyroSettings(deviceId: String) {
         api.requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.GYRO)
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -251,5 +256,4 @@ class BluetoothManager(private val context: Context) {
                 }
             )
     }
-
 }

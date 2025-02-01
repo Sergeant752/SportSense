@@ -19,7 +19,7 @@ import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 fun MainScreen(vm: SensorVM, navController: NavController) {
     val scannedDevices by vm.devices.collectAsState()
     val heartRate by vm.heartRate.collectAsState()
-    val connectedDevice by vm.connectedDevice.collectAsState()
+    val connectedDevices by vm.connectedDevices.collectAsState()
 
     Box(
         modifier = Modifier
@@ -45,28 +45,30 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (connectedDevice == null) {
+            if (connectedDevices.isEmpty()) {
                 Button(onClick = { navController.navigate("scan") }) {
                     Text("Start Scan")
                 }
             } else {
-                Text(
-                    text = "Connected to: $connectedDevice",
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = Color.White
-                )
-                Spacer(modifier = Modifier.height(16.dp))
+                connectedDevices.forEach { deviceId ->  // ✅ Loopar igenom alla anslutna enheter
+                    Text(
+                        text = "Connected to: $deviceId",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = Color.White
+                    )
+                    Spacer(modifier = Modifier.height(8.dp))
 
-                Button(onClick = { vm.startHeartRateMeasurement() }) {
-                    Text("Start HR Measurement")
+                    Button(onClick = { vm.startHeartRateMeasurement(deviceId) }) { // ✅ Startar HR för en specifik enhet
+                        Text("Start HR for $deviceId")
+                    }
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    Button(onClick = { vm.stopHeartRateMeasurement(deviceId) }) {  // ✅ Stoppar HR för en specifik enhet
+                        Text("Stop HR for $deviceId")
+                    }
+                    Spacer(modifier = Modifier.height(16.dp))
                 }
-                Spacer(modifier = Modifier.height(8.dp))
 
-                Button(onClick = { vm.stopHeartRateMeasurement() }) {
-                    Text("Stop HR Measurement")
-                }
-
-                Spacer(modifier = Modifier.height(16.dp))
                 Text(
                     text = "Heart Rate: $heartRate BPM",
                     style = MaterialTheme.typography.headlineMedium,
@@ -104,7 +106,12 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
 }
 
 @Composable
-fun ButtonWithIcon(text: String, icon: androidx.compose.ui.graphics.vector.ImageVector, color: Color, onClick: () -> Unit) {
+fun ButtonWithIcon(
+    text: String,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    color: Color,
+    onClick: () -> Unit
+) {
     Button(
         onClick = onClick,
         shape = RoundedCornerShape(8.dp),
