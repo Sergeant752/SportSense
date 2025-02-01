@@ -39,6 +39,12 @@ object SensorStorage {
         prefs.edit().clear().apply()  // ✅ Använder clear() istället för remove() för att rensa allt
     }
 
+    fun updateSensorHistory(context: Context, updatedHistory: List<SensorData>) {
+        val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
+        val json = Gson().toJson(updatedHistory)
+        prefs.edit().putString(KEY_SENSOR_HISTORY, json).apply()
+    }
+
     fun exportSensorDataAsCSV(context: Context): String {
         val data = getSensorHistory(context)
         val fileName = "sensor_data_${System.currentTimeMillis()}.csv"
