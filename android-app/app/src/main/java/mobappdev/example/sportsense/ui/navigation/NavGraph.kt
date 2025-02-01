@@ -6,6 +6,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
+import androidx.navigation.navArgument
 import mobappdev.example.sportsense.ui.screens.*
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
@@ -52,12 +53,13 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
         ) { SettingsScreen() }
 
         composable(
-            "hr_monitor/{deviceId}",
+            route = "monitor/{deviceId}",
+            arguments = listOf(navArgument("deviceId") { defaultValue = "Unknown Device" }),
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
         ) { backStackEntry ->
-            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: ""
-            HRMonitorScreen(vm = sensorVM, navController = navController, deviceId = deviceId)
+            val deviceId = backStackEntry.arguments?.getString("deviceId") ?: "Unknown Device"
+            MonitorScreen(vm = sensorVM, navController = navController, deviceId = deviceId)
         }
     }
 }
