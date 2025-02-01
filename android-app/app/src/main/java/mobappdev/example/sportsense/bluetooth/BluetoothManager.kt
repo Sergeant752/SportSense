@@ -21,7 +21,8 @@ class BluetoothManager(private val context: Context) {
         context,
         setOf(
             PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING
+            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
+            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ACTIVITY_DATA
         )
     )
 
@@ -126,7 +127,8 @@ class BluetoothManager(private val context: Context) {
     fun startGyroscopeMeasurement() {
         val deviceId = _connectedDevice.value ?: return
 
-        gyroDisposable = api.startGyroStreaming(deviceId, getDefaultSensorSettings())
+        // Aktivera notifikation för gyroskopet innan mätningen startar
+        api.startGyroStreaming(deviceId, getGyroSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { gyroData: PolarGyroData ->
@@ -141,7 +143,14 @@ class BluetoothManager(private val context: Context) {
                         }
                     }
                 },
-                { error -> Log.e("BluetoothManager", "GYRO stream failed: $error") }
+                { error ->
+                    if (error is com.polar.sdk.api.errors.PolarNotificationNotEnabled) {
+                        Log.d("BluetoothManager", "Trying to enable notifications for gyro...")
+                        enableGyroNotification(deviceId)  // Lägg till denna rad
+                    } else {
+                        Log.e("BluetoothManager", "GYRO stream failed: $error")
+                    }
+                }
             )
     }
 
@@ -202,5 +211,25 @@ class BluetoothManager(private val context: Context) {
                 PolarSensorSetting.SettingType.CHANNELS to 3
             )
         )
+    }
+
+    private fun getGyroSensorSettings(): PolarSensorSetting {
+        return PolarSensorSetting(
+            mapOf(
+                PolarSensorSetting.SettingType.SAMPLE_RATE to 2000, // Testa med 100 Hz
+                PolarSensorSetting.SettingType.RESOLUTION to 16,   // Vanligtvis 16 bitar
+                PolarSensorSetting.SettingType.RANGE to 2000,      // Testa 2000 dps (grad/s)
+                PolarSensorSetting.SettingType.CHANNELS to 3       // 3 kanaler: X, Y, Z
+            )
+        )
+    }
+
+    private fun enableGyroNotification(deviceId: String) {
+        api.startGyroStreaming(deviceId, getGyroSensorSettings())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { Log.d("BluetoothManager", "Gyro notification enabled for device $deviceId") },
+                { error -> Log.e("BluetoothManager", "Failed to enable gyro notification: $error") }
+            )
     }
 }
