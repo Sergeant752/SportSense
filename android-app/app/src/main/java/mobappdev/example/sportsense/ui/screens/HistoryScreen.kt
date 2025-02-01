@@ -24,6 +24,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.data.SensorStorage
+import mobappdev.example.sportsense.ui.theme.LightBlue80
 import java.text.SimpleDateFormat
 import java.util.*
 
@@ -36,7 +37,7 @@ fun HistoryScreen() {
     var hrFilter by remember { mutableStateOf("") }
 
     // Statiska färger som fungerar i både dark mode och light mode
-    val backgroundColor = Color(0xFFE3F2FD)
+    val backgroundColor = Color.Black
     val cardGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5)) // Blå gradient
     )
@@ -59,12 +60,12 @@ fun HistoryScreen() {
             Text(
                 text = "Sensor History",
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                color = headerTextColor
+                color = Color.Yellow
             )
 
             Row {
                 IconButton(onClick = { isFilterVisible = !isFilterVisible }) {
-                    Icon(Icons.Default.Search, contentDescription = "Search", tint = headerTextColor)
+                    Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Blue)
                 }
 
                 IconButton(onClick = {
@@ -77,7 +78,7 @@ fun HistoryScreen() {
                 IconButton(onClick = {
                     sensorHistory = SensorStorage.getSensorHistory(context)
                 }) {
-                    Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = headerTextColor)
+                    Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.Green)
                 }
             }
         }
@@ -143,7 +144,7 @@ fun HistoryScreen() {
                         ) {
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.Favorite, contentDescription = "Heart Rate", tint = textColor)
+                                    Icon(Icons.Default.Favorite, contentDescription = "Heart Rate", tint = Color.Red)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = "Heart Rate: ${data.heartRate} BPM",
@@ -155,10 +156,10 @@ fun HistoryScreen() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.DirectionsRun, contentDescription = "Accelerometer", tint = textColor)
+                                    Icon(Icons.Default.DirectionsRun, contentDescription = "Accelerometer", tint = Color.Green)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "ACC: X=${data.accelX}, Y=${data.accelY}, Z=${data.accelZ}",
+                                        text = "ACC: X = ${data.accelX}, Y = ${data.accelY}, Z = ${data.accelZ}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = textColor
                                     )
@@ -167,10 +168,10 @@ fun HistoryScreen() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.RotateRight, contentDescription = "Gyroscope", tint = textColor)
+                                    Icon(Icons.Default.RotateRight, contentDescription = "Gyroscope", tint = Color.Yellow)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "GYRO: X=${data.gyroX}, Y=${data.gyroY}, Z=${data.gyroZ}",
+                                        text = "GYRO: X = ${data.gyroX}, Y = ${data.gyroY}, Z = ${data.gyroZ}",
                                         style = MaterialTheme.typography.bodyMedium,
                                         color = textColor
                                     )
@@ -179,7 +180,7 @@ fun HistoryScreen() {
                                 Spacer(modifier = Modifier.height(4.dp))
 
                                 Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Icon(Icons.Default.AccessTime, contentDescription = "Timestamp", tint = textColor)
+                                    Icon(Icons.Default.AccessTime, contentDescription = "Timestamp", tint = Color.Magenta)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
                                         text = "Time: ${getFormattedDate(data.timestamp)}",
