@@ -22,7 +22,7 @@ class BluetoothManager(private val context: Context) {
         setOf(
             PolarBleApi.PolarBleSdkFeature.FEATURE_HR,
             PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING,
-            PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ACTIVITY_DATA
+            PolarBleApi.PolarBleSdkFeature.FEATURE_DEVICE_INFO // Lägg till denna rad
         )
     )
 
@@ -49,6 +49,7 @@ class BluetoothManager(private val context: Context) {
             override fun deviceConnected(polarDeviceInfo: PolarDeviceInfo) {
                 Log.d("BluetoothManager", "Connected: ${polarDeviceInfo.deviceId}")
                 _connectedDevice.value = polarDeviceInfo.deviceId
+                fetchAvailableGyroSettings()
             }
 
             override fun deviceDisconnected(polarDeviceInfo: PolarDeviceInfo) {
@@ -62,6 +63,11 @@ class BluetoothManager(private val context: Context) {
 
             override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
                 Log.d("BluetoothManager", "Feature ready: $feature on device $identifier")
+                if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING) {
+                    Log.d("BluetoothManager", "Fetching GYRO settings after feature ready.")
+                    startGyroscopeMeasurement() // Starta gyro automatiskt när det är redo
+                    fetchAvailableGyroSettings()
+                }
             }
         })
     }
@@ -126,8 +132,6 @@ class BluetoothManager(private val context: Context) {
 
     fun startGyroscopeMeasurement() {
         val deviceId = _connectedDevice.value ?: return
-
-        // Aktivera notifikation för gyroskopet innan mätningen startar
         api.startGyroStreaming(deviceId, getGyroSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
@@ -135,9 +139,9 @@ class BluetoothManager(private val context: Context) {
                     backgroundScope.launch {
                         gyroData.samples.forEach { sample ->
                             saveSensorData(
-                                gyroX = sample.x.toFloat(),
-                                gyroY = sample.y.toFloat(),
-                                gyroZ = sample.z.toFloat()
+                                gyroX = sample.x,
+                                gyroY = sample.y,
+                                gyroZ = sample.z
                             )
                             Log.d("BluetoothManager", "GYRO: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
                         }
@@ -216,7 +220,7 @@ class BluetoothManager(private val context: Context) {
     private fun getGyroSensorSettings(): PolarSensorSetting {
         return PolarSensorSetting(
             mapOf(
-                PolarSensorSetting.SettingType.SAMPLE_RATE to 2000, // Testa med 100 Hz
+                PolarSensorSetting.SettingType.SAMPLE_RATE to 52, // Testa med 100 Hz
                 PolarSensorSetting.SettingType.RESOLUTION to 16,   // Vanligtvis 16 bitar
                 PolarSensorSetting.SettingType.RANGE to 2000,      // Testa 2000 dps (grad/s)
                 PolarSensorSetting.SettingType.CHANNELS to 3       // 3 kanaler: X, Y, Z
@@ -232,4 +236,20 @@ class BluetoothManager(private val context: Context) {
                 { error -> Log.e("BluetoothManager", "Failed to enable gyro notification: $error") }
             )
     }
+
+    fun fetchAvailableGyroSettings() {
+        val deviceId = _connectedDevice.value ?: return
+        Log.d("BluetoothManager", "Fetching available GYRO settings for device: $deviceId")
+        api.requestStreamSettings(deviceId, PolarBleApi.PolarDeviceDataType.GYRO)
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe(
+                { settings ->
+                    Log.d("BluetoothManager", "Available GYRO settings: ${settings.settings}")
+                },
+                { error ->
+                    Log.e("BluetoothManager", "Failed to get GYRO settings: $error")
+                }
+            )
+    }
+
 }
