@@ -45,7 +45,7 @@ fun HistoryScreen() {
             Button(
                 onClick = {
                     SensorStorage.clearHistory(context)
-                    sensorHistory = emptyList()  // Uppdatera listan direkt
+                    sensorHistory = SensorStorage.getSensorHistory(context)  // ✅ Hämta historiken igen efter rensning
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Red)
             ) {
@@ -68,10 +68,26 @@ fun HistoryScreen() {
                         colors = CardDefaults.cardColors(containerColor = Color.White.copy(alpha = 0.9f))
                     ) {
                         Column(modifier = Modifier.padding(16.dp)) {
-                            Text(text = "Heart Rate: ${data.heartRate} BPM", style = MaterialTheme.typography.bodyLarge, color = Color.Black)
-                            Text(text = "ACC: (X:${data.accelX}, Y:${data.accelY}, Z:${data.accelZ})", style = MaterialTheme.typography.bodyMedium, color = Color.Black)
-                            Text(text = "GYRO: (X:${data.gyroX}, Y:${data.gyroY}, Z:${data.gyroZ})", style = MaterialTheme.typography.bodyMedium, color = Color.Black)
-                            Text(text = "Time: ${getFormattedDate(data.timestamp)}", style = MaterialTheme.typography.bodySmall, color = Color.Gray)
+                            Text(
+                                text = "Heart Rate: ${data.heartRate} BPM",
+                                style = MaterialTheme.typography.bodyLarge,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = "ACC: (X:${data.accelX}, Y:${data.accelY}, Z:${data.accelZ})",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = "GYRO: (X:${data.gyroX}, Y:${data.gyroY}, Z:${data.gyroZ})",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color.Black
+                            )
+                            Text(
+                                text = "Time: ${getFormattedDate(data.timestamp)}",
+                                style = MaterialTheme.typography.bodySmall,
+                                color = Color.Gray
+                            )
                         }
                     }
                 }

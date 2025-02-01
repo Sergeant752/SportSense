@@ -64,7 +64,6 @@ class BluetoothManager(private val context: Context) {
             override fun bleSdkFeatureReady(identifier: String, feature: PolarBleApi.PolarBleSdkFeature) {
                 Log.d("BluetoothManager", "Feature ready: $feature on device $identifier")
                 if (feature == PolarBleApi.PolarBleSdkFeature.FEATURE_POLAR_ONLINE_STREAMING) {
-                    startGyroscopeMeasurement(identifier)
                     fetchAvailableGyroSettings(identifier)
                 }
             }

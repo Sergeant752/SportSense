@@ -1,6 +1,6 @@
 package mobappdev.example.sportsense.ui.screens
 
-import android.util.Log
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
@@ -9,20 +9,17 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import mobappdev.example.sportsense.data.SensorStorage
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
 fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) {
     val heartRate by vm.heartRate.collectAsState()
     val sensorData by vm.sensorData.collectAsState()
-
-    LaunchedEffect(sensorData) {
-        if (sensorData.timestamp != 0L) {
-            Log.d("MonitorScreen", "Sensor Data Updated: $sensorData")
-        }
-    }
+    val context = LocalContext.current
 
     var isMeasuringHR by remember { mutableStateOf(false) }
     var isMeasuringACC by remember { mutableStateOf(false) }
@@ -52,28 +49,20 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(
-                text = "Heart Rate: ${heartRate} bpm",
-                style = MaterialTheme.typography.bodyLarge,
-                color = Color.White
-            )
+            Text(text = "Heart Rate: ${heartRate} bpm", color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(
                 text = "ACC (X:${sensorData.accelX}, Y:${sensorData.accelY}, Z:${sensorData.accelZ})",
-                style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(8.dp))
-
             Text(
                 text = "GYRO (X:${sensorData.gyroX}, Y:${sensorData.gyroY}, Z:${sensorData.gyroZ})",
-                style = MaterialTheme.typography.bodyLarge,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ HR Measurement
+            // Start/Stop HR Measurement
             Button(
                 onClick = {
                     if (isMeasuringHR) {
@@ -92,7 +81,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ✅ Accelerometer Measurement
+            // Start/Stop ACC Measurement
             Button(
                 onClick = {
                     if (isMeasuringACC) {
@@ -111,7 +100,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             }
             Spacer(modifier = Modifier.height(12.dp))
 
-            // ✅ Gyroscope Measurement
+            // Start/Stop GYRO Measurement
             Button(
                 onClick = {
                     if (isMeasuringGYRO) {
@@ -130,7 +119,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ Stop All Measurements
+            // Stop All Measurements
             Button(
                 onClick = {
                     vm.stopAllMeasurements()
@@ -145,7 +134,33 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            // ✅ Back Button
+            // ✅ Export Data as CSV
+            Button(
+                onClick = {
+                    val filePath = SensorStorage.exportSensorDataAsCSV(context)
+                    Toast.makeText(context, "Data exported to $filePath", Toast.LENGTH_LONG).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Export Data as CSV", color = Color.White)
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+
+            // ✅ Export Data as JSON
+            Button(
+                onClick = {
+                    val filePath = SensorStorage.exportSensorDataAsJSON(context)
+                    Toast.makeText(context, "Data exported to $filePath", Toast.LENGTH_LONG).show()
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                modifier = Modifier.fillMaxWidth()
+            ) {
+                Text("Export Data as JSON", color = Color.White)
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Back Button
             Button(
                 onClick = { navController.popBackStack() },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),

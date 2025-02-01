@@ -36,7 +36,7 @@ object SensorStorage {
 
     fun clearHistory(context: Context) {
         val prefs = context.getSharedPreferences(PREFS_NAME, Context.MODE_PRIVATE)
-        prefs.edit().remove(KEY_SENSOR_HISTORY).apply()
+        prefs.edit().clear().apply()  // ✅ Använder clear() istället för remove() för att rensa allt
     }
 
     fun exportSensorDataAsCSV(context: Context): String {

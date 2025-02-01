@@ -32,7 +32,6 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
         delay(3000) // Simulera scanningstid
         isScanning = false
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -58,7 +57,6 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
-
             if (isScanning) {
                 CircularProgressIndicator(color = Color.White)
             } else {
@@ -91,10 +89,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(20.dp))
-
-            // ✅ Visar anslutna enheter
             if (connectedDevices.isNotEmpty()) {
                 Text(
                     text = "Connected devices: ${connectedDevices.joinToString()}",
@@ -103,8 +98,6 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
-
-            // ✅ Exportera data som CSV
             Button(
                 onClick = {
                     val path = SensorStorage.exportSensorDataAsCSV(context)
@@ -115,10 +108,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
             ) {
                 Text("Export Data as CSV")
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
-            // ✅ Exportera data som JSON
             Button(
                 onClick = {
                     val path = SensorStorage.exportSensorDataAsJSON(context)

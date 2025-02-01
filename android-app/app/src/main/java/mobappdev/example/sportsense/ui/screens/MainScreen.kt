@@ -75,7 +75,6 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                     color = Color.White
                 )
             }
-
             Spacer(modifier = Modifier.height(16.dp))
             ButtonWithIcon(
                 text = "History",
