@@ -19,7 +19,9 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
     val sensorData by vm.sensorData.collectAsState()
 
     LaunchedEffect(sensorData) {
-        Log.d("MonitorScreen", "Sensor Data Updated: $sensorData")
+        if (sensorData.timestamp != 0L) {
+            Log.d("MonitorScreen", "Sensor Data Updated: $sensorData")
+        }
     }
 
     var isMeasuringHR by remember { mutableStateOf(false) }

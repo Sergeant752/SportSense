@@ -7,8 +7,11 @@ import com.polar.sdk.api.*
 import com.polar.sdk.api.model.*
 import io.reactivex.rxjava3.android.schedulers.AndroidSchedulers
 import io.reactivex.rxjava3.disposables.Disposable
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.data.SensorStorage
 
@@ -37,6 +40,8 @@ class BluetoothManager(private val context: Context) {
 
     private val _scannedDevices = MutableStateFlow<List<String>>(emptyList())
     val scannedDevices: StateFlow<List<String>> = _scannedDevices
+
+    private val backgroundScope = CoroutineScope(Dispatchers.IO)
 
     init {
         api.setApiCallback(object : PolarBleApiCallback() {
@@ -84,10 +89,12 @@ class BluetoothManager(private val context: Context) {
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { hrData: PolarHrData ->
-                    hrData.samples.forEach { sample ->
-                        _heartRate.value = sample.hr
-                        saveSensorData(heartRate = sample.hr)
-                        Log.d("BluetoothManager", "HR: ${sample.hr}")
+                    backgroundScope.launch {
+                        hrData.samples.forEach { sample ->
+                            _heartRate.value = sample.hr
+                            saveSensorData(heartRate = sample.hr)
+                            Log.d("BluetoothManager", "HR: ${sample.hr}")
+                        }
                     }
                 },
                 { error -> Log.e("BluetoothManager", "HR stream failed: $error") }
@@ -96,13 +103,20 @@ class BluetoothManager(private val context: Context) {
 
     fun startAccelerometerMeasurement() {
         val deviceId = _connectedDevice.value ?: return
+
         accDisposable = api.startAccStreaming(deviceId, getDefaultSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { accData: PolarAccelerometerData ->
-                    accData.samples.forEach { sample ->
-                        saveSensorData(accelX = sample.x.toFloat(), accelY = sample.y.toFloat(), accelZ = sample.z.toFloat())
-                        Log.d("BluetoothManager", "ACC: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
+                    backgroundScope.launch {
+                        accData.samples.forEach { sample ->
+                            saveSensorData(
+                                accelX = sample.x.toFloat(),
+                                accelY = sample.y.toFloat(),
+                                accelZ = sample.z.toFloat()
+                            )
+                            Log.d("BluetoothManager", "ACC: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
+                        }
                     }
                 },
                 { error -> Log.e("BluetoothManager", "ACC stream failed: $error") }
@@ -111,13 +125,20 @@ class BluetoothManager(private val context: Context) {
 
     fun startGyroscopeMeasurement() {
         val deviceId = _connectedDevice.value ?: return
+
         gyroDisposable = api.startGyroStreaming(deviceId, getDefaultSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
             .subscribe(
                 { gyroData: PolarGyroData ->
-                    gyroData.samples.forEach { sample ->
-                        saveSensorData(gyroX = sample.x.toFloat(), gyroY = sample.y.toFloat(), gyroZ = sample.z.toFloat())
-                        Log.d("BluetoothManager", "GYRO: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
+                    backgroundScope.launch {
+                        gyroData.samples.forEach { sample ->
+                            saveSensorData(
+                                gyroX = sample.x.toFloat(),
+                                gyroY = sample.y.toFloat(),
+                                gyroZ = sample.z.toFloat()
+                            )
+                            Log.d("BluetoothManager", "GYRO: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
+                        }
                     }
                 },
                 { error -> Log.e("BluetoothManager", "GYRO stream failed: $error") }
