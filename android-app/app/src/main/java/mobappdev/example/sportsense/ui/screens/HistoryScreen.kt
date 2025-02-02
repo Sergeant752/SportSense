@@ -51,14 +51,13 @@ fun HistoryScreen() {
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // Header med titel och knappar
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Sensor History",
+                text = "Sensor history",
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = Color.Yellow
             )
@@ -82,8 +81,6 @@ fun HistoryScreen() {
                 }
             }
         }
-
-        // Filtersektion
         AnimatedVisibility(visible = isFilterVisible) {
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 OutlinedTextField(
@@ -147,7 +144,7 @@ fun HistoryScreen() {
                                     Icon(Icons.Default.Favorite, contentDescription = "Heart Rate", tint = Color.Red)
                                     Spacer(modifier = Modifier.width(8.dp))
                                     Text(
-                                        text = "Heart Rate: ${data.heartRate} BPM",
+                                        text = "Heart rate: ${data.heartRate} BPM",
                                         style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                                         color = textColor
                                     )

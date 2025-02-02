@@ -54,7 +54,7 @@ fun SettingsScreen() {
                 horizontalAlignment = Alignment.Start
             ) {
                 SettingItem(
-                    title = "Real-Time Updates",
+                    title = "Real-time updates",
                     icon = Icons.Default.Refresh,
                     iconColor = Color(0xFF4CAF50),
                     checked = isRealTimeUpdateEnabled,
@@ -62,7 +62,7 @@ fun SettingsScreen() {
                 )
 
                 SettingItem(
-                    title = "Enable Notifications",
+                    title = "Enable notifications",
                     icon = Icons.Default.Notifications,
                     iconColor = Color(0xFFFFC107),
                     checked = true,
@@ -70,7 +70,7 @@ fun SettingsScreen() {
                 )
 
                 SettingItem(
-                    title = "Dark Mode",
+                    title = "Dark mode",
                     icon = Icons.Default.BrightnessMedium,
                     iconColor = Color(0xFF9C27B0),
                     checked = isDarkModeEnabled,

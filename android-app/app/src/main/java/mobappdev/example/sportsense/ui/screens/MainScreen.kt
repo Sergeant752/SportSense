@@ -39,14 +39,14 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = "Sensor Data",
+                text = "Sensor data",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = { navController.navigate("scan") }) {
-                Text("Start Scan")
+                Text("Start scan")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -57,13 +57,13 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 onClick = { navController.navigate("history") }
             )
             ButtonWithIcon(
-                text = "Train AI Model",
+                text = "Train A.I model",
                 icon = Icons.Filled.Science,
                 color = Color.Green,
                 onClick = { navController.navigate("train_ai") }
             )
             ButtonWithIcon(
-                text = "Import AI Model",
+                text = "Import A.I model",
                 icon = Icons.Filled.Download,
                 color = Color.Cyan,
                 onClick = { navController.navigate("import_model") }
