@@ -97,7 +97,6 @@ class BluetoothManager(private val context: Context) {
         Log.d("BluetoothManager", "Disconnected from device: $deviceId")
     }
 
-
     fun startHeartRateMeasurement(deviceId: String) {
         hrDisposables[deviceId] = api.startHrStreaming(deviceId)
             .observeOn(AndroidSchedulers.mainThread())
@@ -117,6 +116,17 @@ class BluetoothManager(private val context: Context) {
 
     private fun detectKnocking(accelX: Float, accelY: Float, accelZ: Float): Boolean {
         return accelZ > 15 // Tröskelvärde för att detektera knackningar
+    }
+
+    private fun detectRotation(gyroZ: Float): Boolean {
+        return kotlin.math.abs(gyroZ) > 200 // Tröskel för snabb vridning (justera vid behov)
+    }
+
+    private fun detectStationary(accelX: Float, accelY: Float, accelZ: Float): Boolean {
+        val threshold = 0.5f // Nära noll, justera beroende på sensorns känslighet
+        return kotlin.math.abs(accelX) < threshold &&
+                kotlin.math.abs(accelY) < threshold &&
+                kotlin.math.abs(accelZ) < threshold
     }
 
     fun startAccelerometerMeasurement(deviceId: String) {

@@ -64,7 +64,12 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             Text(
                 text = "Tag: ${sensorData.tag ?: "Ingen"}",
                 style = MaterialTheme.typography.bodyLarge,
-                color = if (sensorData.tag == "Knackning") Color.Red else Color.White
+                color = when (sensorData.tag) {
+                    "Knackning" -> Color.Red
+                    "Vridning" -> Color.Yellow
+                    "Stillastående" -> Color.Cyan
+                    else -> Color.White
+                }
             )
 
             Spacer(modifier = Modifier.height(16.dp))

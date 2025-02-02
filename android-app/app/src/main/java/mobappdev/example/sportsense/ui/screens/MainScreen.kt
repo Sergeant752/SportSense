@@ -39,14 +39,14 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = "Sensor data",
+                text = "Explore sensor data",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
 
             Button(onClick = { navController.navigate("scan") }) {
-                Text("Start scan")
+                Text("Scan for devices")
             }
 
             Spacer(modifier = Modifier.height(16.dp))
