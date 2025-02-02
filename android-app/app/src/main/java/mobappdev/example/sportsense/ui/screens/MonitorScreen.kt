@@ -43,13 +43,13 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = "Sensor Monitoring - $deviceId",
+                text = "Sensor monitoring - $deviceId",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Text(text = "Heart Rate: ${heartRate} bpm", color = Color.White)
+            Text(text = "Heart rate: ${heartRate} bpm", color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "ACC (X:${sensorData.accelX}, Y:${sensorData.accelY}, Z:${sensorData.accelZ})",
@@ -75,7 +75,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isMeasuringHR) "Stop HR Measurement" else "Start HR Measurement")
+                Text(if (isMeasuringHR) "Stop HR measurement" else "Start HR measurement")
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -92,7 +92,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isMeasuringACC) "Stop ACC Measurement" else "Start ACC Measurement")
+                Text(if (isMeasuringACC) "Stop ACC measurement" else "Start ACC measurement")
             }
             Spacer(modifier = Modifier.height(12.dp))
             Button(
@@ -109,7 +109,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text(if (isMeasuringGYRO) "Stop GYRO Measurement" else "Start GYRO Measurement")
+                Text(if (isMeasuringGYRO) "Stop GYRO measurement" else "Start GYRO measurement")
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
@@ -122,7 +122,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Stop All Measurements")
+                Text("Stop all measurements")
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
@@ -133,7 +133,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Export Data as CSV", color = Color.White)
+                Text("Export data as CSV", color = Color.White)
             }
             Spacer(modifier = Modifier.height(8.dp))
             Button(
@@ -144,7 +144,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Export Data as JSON", color = Color.White)
+                Text("Export data as JSON", color = Color.White)
             }
             Spacer(modifier = Modifier.height(16.dp))
             Button(

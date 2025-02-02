@@ -1,12 +1,12 @@
 package mobappdev.example.sportsense.ui.screens
 
+import android.content.Context
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.BrightnessMedium
-import androidx.compose.material.icons.filled.Notifications
-import androidx.compose.material.icons.filled.Refresh
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,13 +15,19 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import mobappdev.example.sportsense.data.SensorStorage
 
 @Composable
 fun SettingsScreen() {
+    val context = LocalContext.current
+
     var isRealTimeUpdateEnabled by remember { mutableStateOf(true) }
     var isDarkModeEnabled by remember { mutableStateOf(false) }
+    var autoConnectEnabled by remember { mutableStateOf(false) }
+    var autoClearHistoryEnabled by remember { mutableStateOf(false) }
 
     val cardGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5))
@@ -60,7 +66,6 @@ fun SettingsScreen() {
                     checked = isRealTimeUpdateEnabled,
                     onCheckedChange = { isRealTimeUpdateEnabled = it }
                 )
-
                 SettingItem(
                     title = "Enable notifications",
                     icon = Icons.Default.Notifications,
@@ -68,7 +73,6 @@ fun SettingsScreen() {
                     checked = true,
                     onCheckedChange = { /* Implementera notifikationslogik här */ }
                 )
-
                 SettingItem(
                     title = "Dark mode",
                     icon = Icons.Default.BrightnessMedium,
@@ -76,6 +80,32 @@ fun SettingsScreen() {
                     checked = isDarkModeEnabled,
                     onCheckedChange = { isDarkModeEnabled = it }
                 )
+                SettingItem(
+                    title = "Auto-connect to last device",
+                    icon = Icons.Default.BluetoothConnected,
+                    iconColor = Color.Blue,
+                    checked = autoConnectEnabled,
+                    onCheckedChange = { autoConnectEnabled = it }
+                )
+                SettingItem(
+                    title = "Auto-clear history on exit",
+                    icon = Icons.Default.DeleteSweep,
+                    iconColor = Color.Red,
+                    checked = autoClearHistoryEnabled,
+                    onCheckedChange = { autoClearHistoryEnabled = it }
+                )
+                Button(
+                    onClick = {
+                        val filePath = SensorStorage.exportSensorDataAsJSON(context)
+                        Toast.makeText(context, "Backup created at $filePath", Toast.LENGTH_SHORT).show()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3F51B5)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Icon(Icons.Default.Backup, contentDescription = "Backup", tint = Color.White)
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text("Backup Sensor Data", color = Color.White)
+                }
             }
         }
     }
