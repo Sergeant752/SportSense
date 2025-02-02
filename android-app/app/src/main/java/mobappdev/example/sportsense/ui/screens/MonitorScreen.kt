@@ -160,13 +160,19 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             }
             Spacer(modifier = Modifier.height(16.dp))
 
-            // Back Button
+            // Back to Home Button
             Button(
-                onClick = { navController.popBackStack() },
+                onClick = {
+                    vm.stopAllMeasurements()        // 🛑 Stoppar alla mätningar
+                    vm.disconnectDevice(deviceId)   // 🔌 Kopplar bort enheten
+                    navController.navigate("home") { // ⬅️ Navigerar till MainScreen (Home)
+                        popUpTo("home") { inclusive = true } // Tar bort tidigare skärmar från backstack
+                    }
+                },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Back to Scan")
+                Text("Back to Home")
             }
         }
     }

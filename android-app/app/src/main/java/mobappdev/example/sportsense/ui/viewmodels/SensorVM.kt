@@ -51,4 +51,8 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
     fun stopAllMeasurements() {
         bluetoothManager.stopMeasurements()
     }
+
+    fun disconnectDevice(deviceId: String) {
+        bluetoothManager.disconnectDevice(deviceId)
+    }
 }

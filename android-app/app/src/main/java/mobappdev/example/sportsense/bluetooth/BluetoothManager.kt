@@ -88,6 +88,16 @@ class BluetoothManager(private val context: Context) {
         _connectedDevices.value = _connectedDevices.value + deviceId
     }
 
+    fun disconnectDevice(deviceId: String) {
+        stopHeartRateMeasurement(deviceId)
+        stopAccelerometerMeasurement(deviceId)
+        stopGyroscopeMeasurement(deviceId)
+        api.disconnectFromDevice(deviceId) // 🔗 Kopplar bort enheten via API
+        _connectedDevices.value = _connectedDevices.value.filterNot { it == deviceId } // Uppdaterar state
+        Log.d("BluetoothManager", "Disconnected from device: $deviceId")
+    }
+
+
     fun startHeartRateMeasurement(deviceId: String) {
         hrDisposables[deviceId] = api.startHrStreaming(deviceId)
             .observeOn(AndroidSchedulers.mainThread())

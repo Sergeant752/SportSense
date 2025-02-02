@@ -45,36 +45,10 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            if (connectedDevices.isEmpty()) {
-                Button(onClick = { navController.navigate("scan") }) {
-                    Text("Start Scan")
-                }
-            } else {
-                connectedDevices.forEach { deviceId ->  // ✅ Loopar igenom alla anslutna enheter
-                    Text(
-                        text = "Connected to: $deviceId",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = Color.White
-                    )
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(onClick = { vm.startHeartRateMeasurement(deviceId) }) { // ✅ Startar HR för en specifik enhet
-                        Text("Start HR for $deviceId")
-                    }
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    Button(onClick = { vm.stopHeartRateMeasurement(deviceId) }) {  // ✅ Stoppar HR för en specifik enhet
-                        Text("Stop HR for $deviceId")
-                    }
-                    Spacer(modifier = Modifier.height(16.dp))
-                }
-
-                Text(
-                    text = "Heart Rate: $heartRate BPM",
-                    style = MaterialTheme.typography.headlineMedium,
-                    color = Color.White
-                )
+            Button(onClick = { navController.navigate("scan") }) {
+                Text("Start Scan")
             }
+
             Spacer(modifier = Modifier.height(16.dp))
             ButtonWithIcon(
                 text = "History",
