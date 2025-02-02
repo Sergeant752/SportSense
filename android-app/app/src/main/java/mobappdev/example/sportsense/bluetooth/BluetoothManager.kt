@@ -115,6 +115,10 @@ class BluetoothManager(private val context: Context) {
             )
     }
 
+    private fun detectKnocking(accelX: Float, accelY: Float, accelZ: Float): Boolean {
+        return accelZ > 15 // Tröskelvärde för att detektera knackningar
+    }
+
     fun startAccelerometerMeasurement(deviceId: String) {
         accDisposables[deviceId] = api.startAccStreaming(deviceId, getDefaultSensorSettings())
             .observeOn(AndroidSchedulers.mainThread())
@@ -122,15 +126,27 @@ class BluetoothManager(private val context: Context) {
                 { accData: PolarAccelerometerData ->
                     backgroundScope.launch {
                         accData.samples.forEach { sample ->
-                            saveSensorData(
+                            val knockingDetected = detectKnocking(sample.x.toFloat(), sample.y.toFloat(), sample.z.toFloat())
+
+                            val tag = if (knockingDetected) "Knackning" else null
+                            val updatedData = SensorData(
+                                timestamp = System.currentTimeMillis(),
+                                heartRate = _heartRate.value,
                                 accelX = sample.x.toFloat(),
                                 accelY = sample.y.toFloat(),
-                                accelZ = sample.z.toFloat()
+                                accelZ = sample.z.toFloat(),
+                                gyroX = _sensorData.value.gyroX,
+                                gyroY = _sensorData.value.gyroY,
+                                gyroZ = _sensorData.value.gyroZ,
+                                tag = tag
                             )
-                            if (detectKnocking(sample.x.toFloat(), sample.y.toFloat(), sample.z.toFloat())) {
-                                SensorStorage.saveSensorDataWithTag(context, _sensorData.value, "Knackning")
+
+                            _sensorData.value = updatedData
+                            SensorStorage.saveSensorData(context, updatedData)
+
+                            if (knockingDetected) {
+                                Log.d("BluetoothManager", "Knackning upptäckt!")
                             }
-                            Log.d("BluetoothManager", "ACC: X=${sample.x}, Y=${sample.y}, Z=${sample.z}")
                         }
                     }
                 },
@@ -172,10 +188,6 @@ class BluetoothManager(private val context: Context) {
                 { Log.d("BluetoothManager", "Gyro notification enabled for device $deviceId") },
                 { error -> Log.e("BluetoothManager", "Failed to enable gyro notification: $error") }
             )
-    }
-
-    private fun detectKnocking(accelX: Float, accelY: Float, accelZ: Float): Boolean {
-        return accelZ > 15 // Tröskelvärde för att detektera knackningar
     }
 
     fun stopHeartRateMeasurement(deviceId: String) {

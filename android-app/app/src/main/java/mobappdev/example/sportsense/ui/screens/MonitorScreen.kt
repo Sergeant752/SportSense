@@ -61,6 +61,13 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Tag: ${sensorData.tag ?: "Ingen"}",
+                style = MaterialTheme.typography.bodyLarge,
+                color = if (sensorData.tag == "Knackning") Color.Red else Color.White
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {
                     if (isMeasuringHR) {
