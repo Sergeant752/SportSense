@@ -19,7 +19,7 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 
 val HomeColor = Color(0xFFFFEB3B)  // Gul
-val HistoryColor = Color(0xFF9C27B0)  // Lila
+val HistoryColor = Color(0xFFFF9800)  // Lila
 val SettingsColor = Color(0xFF4CAF50)  // Grön
 val DividerColor = Color.White // Vita streck mellan ikonerna
 val BottomNavBackground = Color(0xFF0D47A1) // Blå bakgrund
