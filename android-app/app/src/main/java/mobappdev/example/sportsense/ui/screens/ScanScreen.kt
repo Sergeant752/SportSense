@@ -29,7 +29,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
 
     LaunchedEffect(Unit) {
         vm.startScanning()
-        delay(3000) // Simulera scanningstid
+        delay(3000)
         isScanning = false
     }
     Box(

@@ -73,7 +73,6 @@ fun BottomNavBar(navController: NavController) {
                         navController.navigate(screen.route)
                     }
                 )
-
             }
             if (index < items.size - 1) {
                 Divider(

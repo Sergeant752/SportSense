@@ -61,8 +61,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Start/Stop HR Measurement
             Button(
                 onClick = {
                     if (isMeasuringHR) {
@@ -80,8 +78,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text(if (isMeasuringHR) "Stop HR Measurement" else "Start HR Measurement")
             }
             Spacer(modifier = Modifier.height(12.dp))
-
-            // Start/Stop ACC Measurement
             Button(
                 onClick = {
                     if (isMeasuringACC) {
@@ -99,8 +95,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text(if (isMeasuringACC) "Stop ACC Measurement" else "Start ACC Measurement")
             }
             Spacer(modifier = Modifier.height(12.dp))
-
-            // Start/Stop GYRO Measurement
             Button(
                 onClick = {
                     if (isMeasuringGYRO) {
@@ -118,8 +112,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text(if (isMeasuringGYRO) "Stop GYRO Measurement" else "Start GYRO Measurement")
             }
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Stop All Measurements
             Button(
                 onClick = {
                     vm.stopAllMeasurements()
@@ -133,8 +125,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text("Stop All Measurements")
             }
             Spacer(modifier = Modifier.height(16.dp))
-
-            // ✅ Export Data as CSV
             Button(
                 onClick = {
                     val filePath = SensorStorage.exportSensorDataAsCSV(context)
@@ -146,8 +136,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text("Export Data as CSV", color = Color.White)
             }
             Spacer(modifier = Modifier.height(8.dp))
-
-            // ✅ Export Data as JSON
             Button(
                 onClick = {
                     val filePath = SensorStorage.exportSensorDataAsJSON(context)
@@ -159,14 +147,12 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text("Export Data as JSON", color = Color.White)
             }
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Back to Home Button
             Button(
                 onClick = {
-                    vm.stopAllMeasurements()        // 🛑 Stoppar alla mätningar
-                    vm.disconnectDevice(deviceId)   // 🔌 Kopplar bort enheten
-                    navController.navigate("home") { // ⬅️ Navigerar till MainScreen (Home)
-                        popUpTo("home") { inclusive = true } // Tar bort tidigare skärmar från backstack
+                    vm.stopAllMeasurements()
+                    vm.disconnectDevice(deviceId)
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
                     }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),

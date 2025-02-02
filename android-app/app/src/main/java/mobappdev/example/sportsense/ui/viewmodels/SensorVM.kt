@@ -12,7 +12,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
 
     val devices: StateFlow<List<String>> = bluetoothManager.scannedDevices
     val heartRate: StateFlow<Int> = bluetoothManager.heartRate
-    val connectedDevices: StateFlow<List<String>> = bluetoothManager.connectedDevices  // ✅ Lagt till för multisensorhantering
+    val connectedDevices: StateFlow<List<String>> = bluetoothManager.connectedDevices
     val sensorData: StateFlow<SensorData> = bluetoothManager.sensorData
 
     fun startScanning() {
@@ -23,7 +23,6 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         bluetoothManager.connectToDevice(deviceId)
     }
 
-    // ✅ Uppdaterade metoder för att stödja flera enheter
     fun startHeartRateMeasurement(deviceId: String) {
         bluetoothManager.startHeartRateMeasurement(deviceId)
     }

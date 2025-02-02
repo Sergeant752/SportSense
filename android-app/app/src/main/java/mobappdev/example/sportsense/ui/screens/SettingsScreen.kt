@@ -23,22 +23,21 @@ fun SettingsScreen() {
     var isRealTimeUpdateEnabled by remember { mutableStateOf(true) }
     var isDarkModeEnabled by remember { mutableStateOf(false) }
 
-    // Blå gradient som i HistoryScreen
     val cardGradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5)) // Blå gradient
+        colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5))
     )
 
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black) // 🖤 Svart bakgrund
+            .background(Color.Black)
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Text(
             text = "Settings",
-            style = MaterialTheme.typography.headlineMedium.copy(color = Color.Yellow), // 🟡 Gul rubrik
+            style = MaterialTheme.typography.headlineMedium.copy(color = Color.Yellow),
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
@@ -47,7 +46,7 @@ fun SettingsScreen() {
                 .fillMaxWidth()
                 .shadow(8.dp, RoundedCornerShape(16.dp))
                 .clip(RoundedCornerShape(16.dp))
-                .background(cardGradient) // 🔵 Blå gradient för kortet
+                .background(cardGradient)
                 .padding(16.dp)
         ) {
             Column(
@@ -57,7 +56,7 @@ fun SettingsScreen() {
                 SettingItem(
                     title = "Real-Time Updates",
                     icon = Icons.Default.Refresh,
-                    iconColor = Color(0xFF4CAF50), // ✅ Grön ikon
+                    iconColor = Color(0xFF4CAF50),
                     checked = isRealTimeUpdateEnabled,
                     onCheckedChange = { isRealTimeUpdateEnabled = it }
                 )
@@ -65,7 +64,7 @@ fun SettingsScreen() {
                 SettingItem(
                     title = "Enable Notifications",
                     icon = Icons.Default.Notifications,
-                    iconColor = Color(0xFFFFC107), // 🌟 Gul ikon
+                    iconColor = Color(0xFFFFC107),
                     checked = true,
                     onCheckedChange = { /* Implementera notifikationslogik här */ }
                 )
@@ -73,7 +72,7 @@ fun SettingsScreen() {
                 SettingItem(
                     title = "Dark Mode",
                     icon = Icons.Default.BrightnessMedium,
-                    iconColor = Color(0xFF9C27B0), // 💜 Lila ikon
+                    iconColor = Color(0xFF9C27B0),
                     checked = isDarkModeEnabled,
                     onCheckedChange = { isDarkModeEnabled = it }
                 )
@@ -99,14 +98,14 @@ fun SettingItem(
         Icon(
             imageVector = icon,
             contentDescription = title,
-            tint = iconColor, // 🎨 Färgad ikon
+            tint = iconColor,
             modifier = Modifier.size(28.dp)
         )
         Spacer(modifier = Modifier.width(12.dp))
         Text(
             text = title,
             style = MaterialTheme.typography.bodyLarge.copy(
-                color = Color.White, // Vit text för bättre kontrast på blå bakgrund
+                color = Color.White,
                 fontWeight = FontWeight.Bold
             ),
             modifier = Modifier.weight(1f)
@@ -115,7 +114,7 @@ fun SettingItem(
             checked = checked,
             onCheckedChange = onCheckedChange,
             colors = SwitchDefaults.colors(
-                checkedThumbColor = Color(0xFF4CAF50), // ✅ Grön switch när aktiverad
+                checkedThumbColor = Color(0xFF4CAF50),
                 uncheckedThumbColor = Color.Red
             )
         )
