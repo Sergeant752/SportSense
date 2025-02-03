@@ -50,7 +50,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             "settings",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { SettingsScreen() }
+        ) { SettingsScreen(vm = sensorVM) }
 
         composable(
             route = "monitor/{deviceId}",

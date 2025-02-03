@@ -17,7 +17,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import kotlinx.coroutines.delay
-import mobappdev.example.sportsense.data.SensorStorage
+import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
@@ -26,12 +26,14 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
     val scannedDevices by vm.devices.collectAsState()
     val connectedDevices by vm.connectedDevices.collectAsState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     LaunchedEffect(Unit) {
         vm.startScanning()
         delay(3000)
         isScanning = false
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -56,7 +58,9 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
+
             Spacer(modifier = Modifier.height(16.dp))
+
             if (isScanning) {
                 CircularProgressIndicator(color = Color.White)
             } else {
@@ -89,7 +93,9 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                     }
                 }
             }
+
             Spacer(modifier = Modifier.height(20.dp))
+
             if (connectedDevices.isNotEmpty()) {
                 Text(
                     text = "Connected devices: ${connectedDevices.joinToString()}",
@@ -98,21 +104,28 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
             }
+
             Button(
                 onClick = {
-                    val path = SensorStorage.exportSensorDataAsCSV(context)
-                    Toast.makeText(context, "Data exported to CSV at $path", Toast.LENGTH_SHORT).show()
+                    coroutineScope.launch {
+                        val path = vm.exportDataAsCSV(context)
+                        Toast.makeText(context, "Data exported to CSV at $path", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Export Data as CSV")
             }
+
             Spacer(modifier = Modifier.height(8.dp))
+
             Button(
                 onClick = {
-                    val path = SensorStorage.exportSensorDataAsJSON(context)
-                    Toast.makeText(context, "Data exported to JSON at $path", Toast.LENGTH_SHORT).show()
+                    coroutineScope.launch {
+                        val path = vm.exportDataAsJSON(context)
+                        Toast.makeText(context, "Data exported to JSON at $path", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
                 modifier = Modifier.fillMaxWidth()

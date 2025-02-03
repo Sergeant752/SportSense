@@ -1,6 +1,5 @@
 package mobappdev.example.sportsense.ui.screens
 
-import android.content.Context
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -22,27 +21,34 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorData
-import mobappdev.example.sportsense.data.SensorStorage
-import mobappdev.example.sportsense.ui.theme.LightBlue80
+import mobappdev.example.sportsense.data.SensorDatabase
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
 fun HistoryScreen() {
     val context = LocalContext.current
-    var sensorHistory by remember { mutableStateOf(SensorStorage.getSensorHistory(context)) }
+    val db = SensorDatabase.getDatabase(context)
+    val dao = db.sensorDao()
+    val coroutineScope = rememberCoroutineScope()
+
+    var sensorHistory by remember { mutableStateOf(listOf<SensorData>()) }
     var isFilterVisible by remember { mutableStateOf(false) }
     var dateFilter by remember { mutableStateOf("") }
     var hrFilter by remember { mutableStateOf("") }
 
-    // Statiska färger som fungerar i både dark mode och light mode
+    // Laddar data från databasen när skärmen visas
+    LaunchedEffect(Unit) {
+        sensorHistory = dao.getAllSensorData()
+    }
+
     val backgroundColor = Color.Black
     val cardGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5)) // Blå gradient
     )
     val textColor = Color.White
-    val headerTextColor = Color(0xFF0D47A1)
 
     Column(
         modifier = Modifier
@@ -57,7 +63,7 @@ fun HistoryScreen() {
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Text(
-                text = "Sensor history",
+                text = "Sensor History",
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = Color.Yellow
             )
@@ -68,19 +74,24 @@ fun HistoryScreen() {
                 }
 
                 IconButton(onClick = {
-                    SensorStorage.clearHistory(context)
-                    sensorHistory = emptyList()
+                    coroutineScope.launch {
+                        dao.clearSensorData()
+                        sensorHistory = emptyList()
+                    }
                 }) {
                     Icon(Icons.Default.Delete, contentDescription = "Clear All", tint = Color.Red)
                 }
 
                 IconButton(onClick = {
-                    sensorHistory = SensorStorage.getSensorHistory(context)
+                    coroutineScope.launch {
+                        sensorHistory = dao.getAllSensorData()
+                    }
                 }) {
                     Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.Green)
                 }
             }
         }
+
         AnimatedVisibility(visible = isFilterVisible) {
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 OutlinedTextField(
@@ -129,11 +140,10 @@ fun HistoryScreen() {
                                     detectHorizontalDragGestures { _, dragAmount ->
                                         if (dragAmount > 100 || dragAmount < -100) {
                                             isVisible = false
-                                            val updatedHistory = sensorHistory.toMutableList().apply {
-                                                removeAt(index)
+                                            coroutineScope.launch {
+                                                dao.deleteSensorData(data)
+                                                sensorHistory = dao.getAllSensorData()
                                             }
-                                            sensorHistory = updatedHistory
-                                            SensorStorage.updateSensorHistory(context, updatedHistory)
                                         }
                                     }
                                 }

@@ -12,18 +12,23 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import mobappdev.example.sportsense.data.SensorStorage
+import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
+import mobappdev.example.sportsense.data.SensorDatabase
 
 @Composable
 fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) {
     val heartRate by vm.heartRate.collectAsState()
     val sensorData by vm.sensorData.collectAsState()
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope()
 
     var isMeasuringHR by remember { mutableStateOf(false) }
     var isMeasuringACC by remember { mutableStateOf(false) }
     var isMeasuringGYRO by remember { mutableStateOf(false) }
+
+    val db = SensorDatabase.getDatabase(context)
+    val dao = db.sensorDao()
 
     Box(
         modifier = Modifier
@@ -137,27 +142,20 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text("Stop all measurements")
             }
             Spacer(modifier = Modifier.height(16.dp))
+
             Button(
                 onClick = {
-                    val filePath = SensorStorage.exportSensorDataAsCSV(context)
-                    Toast.makeText(context, "Data exported to $filePath", Toast.LENGTH_LONG).show()
+                    coroutineScope.launch {
+                        dao.insertSensorData(sensorData)
+                        Toast.makeText(context, "Data saved to Room Database", Toast.LENGTH_SHORT).show()
+                    }
                 },
                 colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
                 modifier = Modifier.fillMaxWidth()
             ) {
-                Text("Export data as CSV", color = Color.White)
+                Text("Save data to Database", color = Color.White)
             }
-            Spacer(modifier = Modifier.height(8.dp))
-            Button(
-                onClick = {
-                    val filePath = SensorStorage.exportSensorDataAsJSON(context)
-                    Toast.makeText(context, "Data exported to $filePath", Toast.LENGTH_LONG).show()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Export data as JSON", color = Color.White)
-            }
+
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {

@@ -18,11 +18,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorStorage
+import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
 @Composable
-fun SettingsScreen() {
+fun SettingsScreen(vm: SensorVM) {
     val context = LocalContext.current
+    val coroutineScope = rememberCoroutineScope() // Hanterar coroutines
 
     var isRealTimeUpdateEnabled by remember { mutableStateOf(true) }
     var isDarkModeEnabled by remember { mutableStateOf(false) }
@@ -94,10 +97,15 @@ fun SettingsScreen() {
                     checked = autoClearHistoryEnabled,
                     onCheckedChange = { autoClearHistoryEnabled = it }
                 )
+
+                // ✅ Uppdaterad Backup-knapp
                 Button(
                     onClick = {
-                        val filePath = SensorStorage.exportSensorDataAsJSON(context)
-                        Toast.makeText(context, "Backup created at $filePath", Toast.LENGTH_SHORT).show()
+                        coroutineScope.launch { // Starta coroutine
+                            val data = vm.getAllSensorData()  // Hämta data via ViewModel
+                            val filePath = SensorStorage.exportSensorDataAsJSON(context, data)
+                            Toast.makeText(context, "Backup created at $filePath", Toast.LENGTH_SHORT).show()
+                        }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3F51B5)),
                     modifier = Modifier.fillMaxWidth()
@@ -110,6 +118,8 @@ fun SettingsScreen() {
         }
     }
 }
+
+
 
 @Composable
 fun SettingItem(
