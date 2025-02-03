@@ -1,6 +1,7 @@
 plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
+    id 'kotlin-kapt' // Lägg till denna rad
 }
 
 android {
@@ -80,4 +81,9 @@ dependencies {
     implementation("com.github.polarofficial:polar-ble-sdk:5.13.0") // Polar BLE SDK
     implementation("io.reactivex.rxjava3:rxjava:3.1.6") // RxJava för hantering av async operationer
     implementation("io.reactivex.rxjava3:rxandroid:3.0.2") // RxAndroid för att hantera UI-tråden
+
+    implementation "androidx.room:room-runtime:2.5.0"
+    kapt "androidx.room:room-compiler:2.5.0"
+    implementation "androidx.room:room-ktx:2.5.0"
+    implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.6.0"
 }
