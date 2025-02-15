@@ -21,6 +21,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.data.SensorDatabase
@@ -28,7 +29,7 @@ import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun HistoryScreen() {
+fun HistoryScreen(navController: NavController) {
     val context = LocalContext.current
     val db = SensorDatabase.getDatabase(context)
     val dao = db.sensorDao()
@@ -88,6 +89,9 @@ fun HistoryScreen() {
                     }
                 }) {
                     Icon(Icons.Default.Refresh, contentDescription = "Refresh", tint = Color.Green)
+                }
+                IconButton(onClick = { navController.navigate("hr_graph") }) {
+                    Icon(Icons.Default.ShowChart, contentDescription = "HR Graph", tint = Color.Magenta)
                 }
             }
         }

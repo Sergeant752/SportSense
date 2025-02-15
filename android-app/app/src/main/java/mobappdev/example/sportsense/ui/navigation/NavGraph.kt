@@ -3,10 +3,14 @@ package mobappdev.example.sportsense.ui.navigation
 import androidx.compose.animation.*
 import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navArgument
+import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.ui.screens.*
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 
@@ -32,7 +36,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             "history",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { HistoryScreen() }
+        ) { HistoryScreen(navController = navController) }
 
         composable(
             "train_ai",
@@ -51,6 +55,19 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
         ) { SettingsScreen(vm = sensorVM) }
+
+        composable(
+            "hr_graph",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) {
+            val sensorData = remember { mutableStateOf<List<SensorData>>(emptyList()) }
+            LaunchedEffect(Unit) {
+                sensorData.value = sensorVM.getAllSensorData() // Hämta hjärtfrekvensdata i en coroutine
+            }
+            HRGraphScreen(sensorData = sensorData.value)
+        }
+
 
         composable(
             route = "monitor/{deviceId}",
