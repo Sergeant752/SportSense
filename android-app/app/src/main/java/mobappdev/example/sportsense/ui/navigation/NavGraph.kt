@@ -36,7 +36,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             "history",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { HistoryScreen(navController = navController) }
+        ) { HistoryScreen(navController = navController, vm = sensorVM  ) }
 
         composable(
             "train_ai",

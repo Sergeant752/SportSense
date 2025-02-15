@@ -1,4 +1,4 @@
-package mobappdev.example.sportsense.networking
+package mobappdev.example.sportsense.network
 
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers

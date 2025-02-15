@@ -3,6 +3,10 @@ package mobappdev.example.sportsense.ui.screens
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.CloudUpload
+import androidx.compose.material.icons.filled.Code
+import androidx.compose.material.icons.filled.FileDownload
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -66,6 +70,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
+            /*
             Text(
                 text = "Tag: ${sensorData.tag ?: "Ingen"}",
                 style = MaterialTheme.typography.bodyLarge,
@@ -76,6 +81,40 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     else -> Color.White
                 }
             )
+            
+             */
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        val csvPath = vm.exportDataAsCSV(context)
+                        Toast.makeText(context, "Data exported to CSV at $csvPath", Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                    Icon(Icons.Default.FileDownload, contentDescription = "Export CSV", tint = Color.Green)
+                }
+
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        val jsonPath = vm.exportDataAsJSON(context)
+                        Toast.makeText(context, "Data exported to JSON at $jsonPath", Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                    Icon(Icons.Default.Code, contentDescription = "Export JSON", tint = Color.Cyan)
+                }
+
+                IconButton(onClick = {
+                    coroutineScope.launch {
+                        vm.sendDataToPython(context)
+                        Toast.makeText(context, "Data sent to Python for analysis!", Toast.LENGTH_SHORT).show()
+                    }
+                }) {
+                    Icon(Icons.Default.CloudUpload, contentDescription = "Send to Python", tint = Color.Magenta)
+                }
+            }
 
             Spacer(modifier = Modifier.height(16.dp))
             Button(

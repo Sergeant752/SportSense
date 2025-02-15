@@ -1,5 +1,6 @@
 package mobappdev.example.sportsense.ui.screens
 
+import android.widget.Toast
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectHorizontalDragGestures
@@ -25,11 +26,12 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.data.SensorDatabase
+import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun HistoryScreen(navController: NavController) {
+fun HistoryScreen(navController: NavController, vm: SensorVM) {
     val context = LocalContext.current
     val db = SensorDatabase.getDatabase(context)
     val dao = db.sensorDao()
@@ -92,6 +94,36 @@ fun HistoryScreen(navController: NavController) {
                 }
                 IconButton(onClick = { navController.navigate("hr_graph") }) {
                     Icon(Icons.Default.ShowChart, contentDescription = "HR Graph", tint = Color.Magenta)
+                }
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceAround
+                ) {
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            val csvPath = vm.exportDataAsCSV(context)
+                            Toast.makeText(context, "Data exported to CSV at $csvPath", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(Icons.Default.FileDownload, contentDescription = "Export CSV", tint = Color.Green)
+                    }
+
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            val jsonPath = vm.exportDataAsJSON(context)
+                            Toast.makeText(context, "Data exported to JSON at $jsonPath", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(Icons.Default.Code, contentDescription = "Export JSON", tint = Color.Cyan)
+                    }
+
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            vm.sendDataToPython(context)
+                        }
+                    }) {
+                        Icon(Icons.Default.CloudUpload, contentDescription = "Send to Python", tint = Color.Magenta)
+                    }
                 }
             }
         }
