@@ -4,9 +4,7 @@ import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.CloudUpload
-import androidx.compose.material.icons.filled.Code
-import androidx.compose.material.icons.filled.FileDownload
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -39,7 +37,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
+                    colors = listOf(Color(0xFF0B3D91), Color(0xFF1E3A8A))
                 )
             ),
         contentAlignment = Alignment.Center
@@ -49,10 +47,10 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             verticalArrangement = Arrangement.Center,
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 32.dp)
+                .padding(horizontal = 16.dp)
         ) {
             Text(
-                text = "Sensor monitoring - $deviceId",
+                text = "Sensor data - $deviceId",
                 style = MaterialTheme.typography.headlineSmall,
                 color = Color.White
             )
@@ -70,157 +68,148 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
-            /*
-            Text(
-                text = "Tag: ${sensorData.tag ?: "Ingen"}",
-                style = MaterialTheme.typography.bodyLarge,
-                color = when (sensorData.tag) {
-                    "Knackning" -> Color.Red
-                    "Vridning" -> Color.Yellow
-                    "Stillastående" -> Color.Cyan
-                    else -> Color.White
+
+            // Export and Python buttons with labels
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconWithLabel(
+                    icon = Icons.Default.FileDownload,
+                    label = "Export CSV",
+                    color = Color.Green
+                ) {
+                    coroutineScope.launch {
+                        val csvPath = vm.exportDataAsCSV(context)
+                        Toast.makeText(context, "Data exported to CSV at $csvPath", Toast.LENGTH_SHORT).show()
+                    }
                 }
-            )
-            
-             */
+                IconWithLabel(
+                    icon = Icons.Default.Code,
+                    label = "Export JSON",
+                    color = Color.Cyan
+                ) {
+                    coroutineScope.launch {
+                        val jsonPath = vm.exportDataAsJSON(context)
+                        Toast.makeText(context, "Data exported to JSON at $jsonPath", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                IconWithLabel(
+                    icon = Icons.Default.CloudUpload,
+                    label = "Send to Python",
+                    color = Color.Magenta
+                ) {
+                    coroutineScope.launch {
+                        vm.sendDataToPython(context)
+                        Toast.makeText(context, "Data sent to Python for analysis!", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Start Measurement buttons with labels
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconWithLabel(
+                    icon = if (isMeasuringHR) Icons.Default.Stop else Icons.Default.Favorite,
+                    label = if (isMeasuringHR) "Stop HR" else "Start HR",
+                    color = if (isMeasuringHR) Color.Red else Color.Green
+                ) {
+                    if (isMeasuringHR) vm.stopHeartRateMeasurement(deviceId) else vm.startHeartRateMeasurement(deviceId)
+                    isMeasuringHR = !isMeasuringHR
+                }
+                IconWithLabel(
+                    icon = if (isMeasuringACC) Icons.Default.Stop else Icons.Default.DirectionsRun,
+                    label = if (isMeasuringACC) "Stop ACC" else "Start ACC",
+                    color = if (isMeasuringACC) Color.Red else Color.Green
+                ) {
+                    if (isMeasuringACC) vm.stopAccelerometerMeasurement(deviceId) else vm.startAccelerometerMeasurement(deviceId)
+                    isMeasuringACC = !isMeasuringACC
+                }
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
-                IconButton(onClick = {
-                    coroutineScope.launch {
-                        val csvPath = vm.exportDataAsCSV(context)
-                        Toast.makeText(context, "Data exported to CSV at $csvPath", Toast.LENGTH_SHORT).show()
-                    }
-                }) {
-                    Icon(Icons.Default.FileDownload, contentDescription = "Export CSV", tint = Color.Green)
-                }
-
-                IconButton(onClick = {
-                    coroutineScope.launch {
-                        val jsonPath = vm.exportDataAsJSON(context)
-                        Toast.makeText(context, "Data exported to JSON at $jsonPath", Toast.LENGTH_SHORT).show()
-                    }
-                }) {
-                    Icon(Icons.Default.Code, contentDescription = "Export JSON", tint = Color.Cyan)
-                }
-
-                IconButton(onClick = {
-                    coroutineScope.launch {
-                        vm.sendDataToPython(context)
-                        Toast.makeText(context, "Data sent to Python for analysis!", Toast.LENGTH_SHORT).show()
-                    }
-                }) {
-                    Icon(Icons.Default.CloudUpload, contentDescription = "Send to Python", tint = Color.Magenta)
-                }
-            }
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    if (isMeasuringHR) {
-                        vm.stopHeartRateMeasurement(deviceId)
-                    } else {
-                        vm.startHeartRateMeasurement(deviceId)
-                    }
-                    isMeasuringHR = !isMeasuringHR
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isMeasuringHR) Color.Red else Color.Green
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (isMeasuringHR) "Stop HR measurement" else "Start HR measurement")
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                onClick = {
-                    if (isMeasuringACC) {
-                        vm.stopAccelerometerMeasurement(deviceId)
-                    } else {
-                        vm.startAccelerometerMeasurement(deviceId)
-                    }
-                    isMeasuringACC = !isMeasuringACC
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isMeasuringACC) Color.Red else Color.Green
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (isMeasuringACC) "Stop ACC measurement" else "Start ACC measurement")
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Button(
-                onClick = {
-                    if (isMeasuringGYRO) {
-                        vm.stopGyroscopeMeasurement(deviceId)
-                    } else {
-                        vm.startGyroscopeMeasurement(deviceId)
-                    }
+                IconWithLabel(
+                    icon = if (isMeasuringGYRO) Icons.Default.Stop else Icons.Default.RotateRight,
+                    label = if (isMeasuringGYRO) "Stop GYRO" else "Start GYRO",
+                    color = if (isMeasuringGYRO) Color.Red else Color.Green
+                ) {
+                    if (isMeasuringGYRO) vm.stopGyroscopeMeasurement(deviceId) else vm.startGyroscopeMeasurement(deviceId)
                     isMeasuringGYRO = !isMeasuringGYRO
-                },
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isMeasuringGYRO) Color.Red else Color.Green
-                ),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text(if (isMeasuringGYRO) "Stop GYRO measurement" else "Start GYRO measurement")
-            }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
+                }
+                IconWithLabel(
+                    icon = Icons.Default.Block,
+                    label = "Stop All",
+                    color = Color.Gray
+                ) {
                     vm.stopAllMeasurements()
                     isMeasuringHR = false
                     isMeasuringACC = false
                     isMeasuringGYRO = false
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Gray),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Stop all measurements")
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
 
-            Button(
-                onClick = {
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconWithLabel(
+                    icon = Icons.Default.Save,
+                    label = "Save Data",
+                    color = Color.Blue
+                ) {
                     coroutineScope.launch {
                         dao.insertSensorData(sensorData)
                         Toast.makeText(context, "Data saved to Room Database", Toast.LENGTH_SHORT).show()
                     }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Blue),
-                modifier = Modifier.fillMaxWidth()
-            ) {
-                Text("Save data to Database", color = Color.White)
-            }
-
-            Button(
-                onClick = {
+                }
+                IconWithLabel(
+                    icon = Icons.Default.PowerSettingsNew,
+                    label = "Disconnect",
+                    color = Color.Red
+                ) {
                     vm.disconnectDevice(deviceId)
                     Toast.makeText(context, "Device disconnected", Toast.LENGTH_SHORT).show()
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = true }
                     }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
-            ) {
-                Text("Disconnect Device", color = Color.White)
+                }
             }
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                onClick = {
-                    vm.stopAllMeasurements()
-                    navController.navigate("home") {
-                        popUpTo("home") { inclusive = true }
-                    }
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.LightGray),
-                modifier = Modifier.fillMaxWidth()
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            IconWithLabel(
+                icon = Icons.Default.ArrowBack,
+                label = "Back Home",
+                color = Color.LightGray
             ) {
-                Text("Back to Home")
+                vm.stopAllMeasurements()
+                navController.navigate("home") {
+                    popUpTo("home") { inclusive = true }
+                }
             }
         }
+    }
+}
+
+@Composable
+fun IconWithLabel(icon: androidx.compose.ui.graphics.vector.ImageVector, label: String, color: Color, onClick: () -> Unit) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(imageVector = icon, contentDescription = label, tint = color)
+        }
+        Text(text = label, color = Color.White, style = MaterialTheme.typography.bodySmall)
     }
 }

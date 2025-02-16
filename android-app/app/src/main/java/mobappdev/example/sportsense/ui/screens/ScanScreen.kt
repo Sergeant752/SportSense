@@ -33,13 +33,16 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
         delay(3000)
         isScanning = false
     }
-
     Box(
         modifier = Modifier
             .fillMaxSize()
             .background(
                 Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
+                    colors = listOf(
+                        Color(0xFF0D47A1),
+                        Color(0xFF311B92),
+                        Color(0xFF1B1F3B)
+                    )
                 )
             ),
         contentAlignment = Alignment.Center
@@ -52,20 +55,18 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = if (isScanning) "Scanning for Devices..."
-                else if (scannedDevices.isNotEmpty()) "Devices Found!"
+                text = if (isScanning) "Scanning for devices..."
+                else if (scannedDevices.isNotEmpty()) "Devices found!"
                 else "No devices found",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
+                color = Color.Yellow
             )
-
             Spacer(modifier = Modifier.height(16.dp))
-
             if (isScanning) {
                 CircularProgressIndicator(color = Color.White)
             } else {
                 if (scannedDevices.isEmpty()) {
-                    Text("No devices found", color = Color.White)
+                    Text("No devices found", color = Color.Yellow)
                 } else {
                     LazyColumn {
                         items(scannedDevices) { device ->
@@ -93,9 +94,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(20.dp))
-
             if (connectedDevices.isNotEmpty()) {
                 Text(
                     text = "Connected devices: ${connectedDevices.joinToString()}",
@@ -112,14 +111,16 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                         Toast.makeText(context, "Data exported to CSV at $path", Toast.LENGTH_SHORT).show()
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Green),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Green,
+                    contentColor = Color.Black  // Textfärgen blir svart
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Export Data as CSV")
             }
 
             Spacer(modifier = Modifier.height(8.dp))
-
             Button(
                 onClick = {
                     coroutineScope.launch {
@@ -127,7 +128,10 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                         Toast.makeText(context, "Data exported to JSON at $path", Toast.LENGTH_SHORT).show()
                     }
                 },
-                colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Cyan,
+                    contentColor = Color.Black  // Textfärgen blir svart
+                ),
                 modifier = Modifier.fillMaxWidth()
             ) {
                 Text("Export Data as JSON")

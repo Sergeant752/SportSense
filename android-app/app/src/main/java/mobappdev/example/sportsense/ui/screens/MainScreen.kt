@@ -25,11 +25,7 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(Color(0xFF1976D2), Color(0xFF64B5F6))
-                )
-            ),
+            .background(Color(0xFF001F3F)),
         contentAlignment = Alignment.Center
     ) {
         Column(
@@ -40,9 +36,9 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 .padding(horizontal = 32.dp)
         ) {
             Text(
-                text = "Explore sensor data",
+                text = "Explore",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.White
+                color = Color.Yellow  // Textfärg ändrad till gul
             )
             Spacer(modifier = Modifier.height(16.dp))
 
@@ -54,11 +50,23 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = { navController.navigate("monitor/${connectedDevice}") }) {
-                    Text("Monitor: " + connectedDevice)
+                    Text("Monitor: $connectedDevice")
                 }
             } else {
-                Button(onClick = { navController.navigate("scan") }) {
-                    Text("Scan for devices")
+                Button(
+                    onClick = { navController.navigate("scan") },
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(vertical = 4.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Black)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Text("Scan for devices", color = Color.Black)
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Icon(Icons.Default.Bluetooth, contentDescription = "Bluetooth", tint = Color.Black)
+                    }
                 }
             }
 
@@ -78,7 +86,7 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
             ButtonWithIcon(
                 text = "Import A.I model",
                 icon = Icons.Filled.Download,
-                color = Color.Cyan,
+                color = Color.Blue,
                 onClick = { navController.navigate("import_model") }
             )
             ButtonWithIcon(
