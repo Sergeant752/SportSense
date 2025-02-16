@@ -212,7 +212,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
             Button(
                 onClick = {
                     vm.stopAllMeasurements()
-                    vm.disconnectDevice(deviceId)
                     navController.navigate("home") {
                         popUpTo("home") { inclusive = true }
                     }

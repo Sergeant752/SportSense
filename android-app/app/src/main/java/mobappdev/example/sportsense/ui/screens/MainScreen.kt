@@ -54,7 +54,7 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(onClick = { navController.navigate("monitor/${connectedDevice}") }) {
-                    Text("Go to Monitor")
+                    Text("Monitor: " + connectedDevice)
                 }
             } else {
                 Button(onClick = { navController.navigate("scan") }) {
