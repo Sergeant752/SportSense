@@ -195,6 +195,19 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 Text("Save data to Database", color = Color.White)
             }
 
+            Button(
+                onClick = {
+                    vm.disconnectDevice(deviceId)
+                    Toast.makeText(context, "Device disconnected", Toast.LENGTH_SHORT).show()
+                    navController.navigate("home") {
+                        popUpTo("home") { inclusive = true }
+                    }
+                },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 16.dp)
+            ) {
+                Text("Disconnect Device", color = Color.White)
+            }
             Spacer(modifier = Modifier.height(16.dp))
             Button(
                 onClick = {

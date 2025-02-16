@@ -20,6 +20,7 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
     val scannedDevices by vm.devices.collectAsState()
     val heartRate by vm.heartRate.collectAsState()
     val connectedDevices by vm.connectedDevices.collectAsState()
+    val connectedDevice by vm.currentConnectedDevice.collectAsState()
 
     Box(
         modifier = Modifier
@@ -45,8 +46,20 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
             )
             Spacer(modifier = Modifier.height(16.dp))
 
-            Button(onClick = { navController.navigate("scan") }) {
-                Text("Scan for devices")
+            if (connectedDevice != null) {
+                Text(
+                    text = "Connected to: $connectedDevice",
+                    color = Color.Green,
+                    style = MaterialTheme.typography.bodyLarge
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Button(onClick = { navController.navigate("monitor/${connectedDevice}") }) {
+                    Text("Go to Monitor")
+                }
+            } else {
+                Button(onClick = { navController.navigate("scan") }) {
+                    Text("Scan for devices")
+                }
             }
 
             Spacer(modifier = Modifier.height(16.dp))

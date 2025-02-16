@@ -4,6 +4,7 @@ import android.app.Application
 import android.content.Context
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import mobappdev.example.sportsense.bluetooth.BluetoothManager
 import mobappdev.example.sportsense.data.SensorData
@@ -23,6 +24,8 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
     val connectedDevices: StateFlow<List<String>> = bluetoothManager.connectedDevices
     val sensorData: StateFlow<SensorData> = bluetoothManager.sensorData
 
+    private val _currentConnectedDevice = MutableStateFlow<String?>(null)
+    val currentConnectedDevice: StateFlow<String?> = _currentConnectedDevice
 
     fun startScanning() {
         bluetoothManager.startScan()
@@ -30,6 +33,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
 
     fun connectToDevice(deviceId: String) {
         bluetoothManager.connectToDevice(deviceId)
+        _currentConnectedDevice.value = deviceId
     }
 
     fun startHeartRateMeasurement(deviceId: String) {
@@ -62,6 +66,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
 
     fun disconnectDevice(deviceId: String) {
         bluetoothManager.disconnectDevice(deviceId)
+        _currentConnectedDevice.value = null
     }
 
     suspend fun exportDataAsCSV(context: Context): String {
@@ -78,14 +83,10 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         val data = getAllSensorData()  // Hämta all historisk data från databasen
         try {
             val response = RetrofitInstance.api.analyzeData(data)
-
             if (response.isSuccessful && response.body() != null) {
                 val analyzedData = response.body()  // Hämta det analyserade resultatet
-
-                // Spara analyserad data i Room-databasen
                 analyzedData?.let { results ->
                     for (record in results) {
-                        // Skapa en ny SensorData-post med en "analyzed" flagga
                         val analyzedRecord = SensorData(
                             timestamp = record.timestamp,
                             heartRate = record.heartRate,
@@ -97,11 +98,9 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
                             gyroZ = record.gyroZ,
                             tag = "Analyzed"
                         )
-                        dao.insertSensorData(analyzedRecord)  // Spara i Room
+                        dao.insertSensorData(analyzedRecord)
                     }
                 }
-
-                // Visa en Toast-bekräftelse
                 Toast.makeText(
                     context,
                     "Analyzed data saved! ${analyzedData?.size} records processed.",
@@ -115,9 +114,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     suspend fun getAllSensorData(): List<SensorData> {
         return dao.getAllSensorData()
     }
-
 }

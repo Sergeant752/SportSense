@@ -85,6 +85,10 @@ class BluetoothManager(private val context: Context) {
     }
 
     fun connectToDevice(deviceId: String) {
+        if (_connectedDevices.value.contains(deviceId)) {
+            Log.d("BluetoothManager", "Device $deviceId is already connected.")
+            return
+        }
         api.connectToDevice(deviceId)
         _connectedDevices.value += deviceId
     }
