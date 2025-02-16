@@ -79,22 +79,41 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         try {
             val response = RetrofitInstance.api.analyzeData(data)
 
-            if (response.isSuccessful) {
+            if (response.isSuccessful && response.body() != null) {
                 val analyzedData = response.body()  // Hämta det analyserade resultatet
 
-                // Exempel: Visa en Toast med analysstatus
-                Toast.makeText(context, "Data analyzed! ${analyzedData?.size} records processed.", Toast.LENGTH_LONG).show()
+                // Spara analyserad data i Room-databasen
+                analyzedData?.let { results ->
+                    for (record in results) {
+                        // Skapa en ny SensorData-post med en "analyzed" flagga
+                        val analyzedRecord = SensorData(
+                            timestamp = record.timestamp,
+                            heartRate = record.heartRate,
+                            accelX = record.accelX,
+                            accelY = record.accelY,
+                            accelZ = record.accelZ,
+                            gyroX = record.gyroX,
+                            gyroY = record.gyroY,
+                            gyroZ = record.gyroZ,
+                            tag = "Analyzed"
+                        )
+                        dao.insertSensorData(analyzedRecord)  // Spara i Room
+                    }
+                }
 
-                // Lägg till logik för att spara eller visa analyserad data om det behövs
-                // t.ex.: Save analyzedData to local database if needed
+                // Visa en Toast-bekräftelse
+                Toast.makeText(
+                    context,
+                    "Analyzed data saved! ${analyzedData?.size} records processed.",
+                    Toast.LENGTH_LONG
+                ).show()
             } else {
-                Toast.makeText(context, "Error: ${response.code()}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
             }
         } catch (e: Exception) {
             Toast.makeText(context, "Failed to send data: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
-
 
 
     suspend fun getAllSensorData(): List<SensorData> {

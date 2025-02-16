@@ -28,6 +28,25 @@ def get_analysis():
         return jsonify(analyzed_data), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+    
+@app.route('/analyze', methods=['POST'])
+def analyze_data():
+    try:
+        data = request.get_json()
+        if not data:
+            return jsonify({"status": "error", "message": "No data received"}), 400
+
+        # Här kan du lägga till din analyslogik
+        print(f"Received data for analysis: {data}")
+
+        # Exempel: Generera analyserad data
+        analyzed_data = [{"timestamp": d["timestamp"], "result": "Analyzed"} for d in data]
+
+        # Returnera analyserat resultat
+        return jsonify(analyzed_data), 200
+    except Exception as e:
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000)
+    app.run(host='0.0.0.0', port=5000, ssl_context=('cert.pem', 'key.pem'))
