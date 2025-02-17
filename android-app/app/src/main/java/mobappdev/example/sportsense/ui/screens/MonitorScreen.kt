@@ -68,8 +68,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Export and Python buttons with labels
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -105,10 +103,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(16.dp))
-
-            // Start Measurement buttons with labels
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -185,9 +180,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     }
                 }
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
             IconWithLabel(
                 icon = Icons.Default.ArrowBack,
                 label = "Back Home",
