@@ -25,7 +25,15 @@ fun MainScreen(vm: SensorVM, navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFF001F3F)),
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0D47A1),  // Djup blå
+                        Color(0xFF311B92),  // Mörk lila-blå
+                        Color(0xFF1B1F3B)   // Nästan svart
+                    )
+                )
+            ),
         contentAlignment = Alignment.Center
     ) {
         Column(

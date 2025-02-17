@@ -56,7 +56,15 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(backgroundColor)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0D47A1),  // Djup blå
+                        Color(0xFF311B92),  // Mörk lila-blå
+                        Color(0xFF1B1F3B)   // Nästan svart
+                    )
+                )
+            )
             .padding(16.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -155,7 +163,7 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
         }
 
         if (filteredHistory.isEmpty()) {
-            Text(text = "No sensor data recorded", color = Color.Gray)
+            Text(text = "No sensor data recorded", color = Color.Yellow)
         } else {
             LazyColumn(
                 modifier = Modifier.fillMaxSize(),

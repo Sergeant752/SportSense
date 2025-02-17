@@ -7,22 +7,28 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
+import mobappdev.example.sportsense.ui.theme.LightBlue40
 
-val HomeColor = Color(0xFFFFEB3B)  // Gul
-val HistoryColor = Color(0xFFFF9800)  // Lila
+val BottomNavGradient = Brush.verticalGradient(
+    colors = listOf(
+        Color(0xFF1B1F3B),  // Mörkblå-lila (matchar skärmarnas nedre del)
+        Color(0xFF0D47A1)   // Djup blå (samma som övergången på skärmen)
+    )
+)
+
+val HomeColor = LightBlue40
+val HistoryColor = Color.Magenta  // Orange
 val SettingsColor = Color(0xFF4CAF50)  // Grön
-val DividerColor = Color.White // Vita streck mellan ikonerna
-val BottomNavBackground = Color(0xFF0D47A1) // Blå bakgrund
 
 sealed class Screen(val route: String, val icon: ImageVector, val label: String, val color: Color) {
     object Home : Screen("home", Icons.Filled.Home, "Home", HomeColor)
@@ -34,37 +40,36 @@ sealed class Screen(val route: String, val icon: ImageVector, val label: String,
 fun BottomNavBar(navController: NavController) {
     var selectedRoute by remember { mutableStateOf("home") }
 
-    NavigationBar(
-        containerColor = BottomNavBackground, // Blå bakgrund på navbar
-        tonalElevation = 8.dp,
-        modifier = Modifier.fillMaxWidth()
+    Box(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(BottomNavGradient) // 🌟 Använd gradienten
     ) {
-        val items = listOf(Screen.Home, Screen.History, Screen.Settings)
+        NavigationBar(
+            containerColor = Color.Transparent, // Gör NavigationBar transparent för att visa gradienten
+            tonalElevation = 0.dp, // Ta bort skuggor för mjukare övergång
+            modifier = Modifier.fillMaxWidth()
+        ) {
+            val items = listOf(Screen.Home, Screen.History, Screen.Settings)
 
-        items.forEachIndexed { index, screen ->
-            val isSelected = screen.route == selectedRoute
-            val animatedSize = animateFloatAsState(if (isSelected) 1.2f else 1f)
-            val animatedColor = animateColorAsState(if (isSelected) screen.color else screen.color.copy(alpha = 0.6f))
+            items.forEach { screen ->
+                val isSelected = screen.route == selectedRoute
+                val animatedSize by animateFloatAsState(if (isSelected) 1.2f else 1f)
+                val animatedColor by animateColorAsState(if (isSelected) screen.color else screen.color.copy(alpha = 0.6f))
 
-            Row(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .weight(1f)
-                    .background(BottomNavBackground) // Bakgrundsfärg behålls
-            ) {
                 NavigationBarItem(
                     icon = {
                         Icon(
                             screen.icon,
                             contentDescription = screen.label,
-                            tint = animatedColor.value.copy(alpha = if (isSelected) 1f else 0.8f), // Förbättra synligheten
-                            modifier = Modifier.scale(animatedSize.value)
+                            tint = animatedColor, // 🌟 Färgen blir mer intensiv när vald
+                            modifier = Modifier.scale(animatedSize)
                         )
                     },
                     label = {
                         Text(
                             screen.label,
-                            color = Color.White // Ändrar textfärgen till vit
+                            color = Color.White
                         )
                     },
                     selected = isSelected,
@@ -72,15 +77,6 @@ fun BottomNavBar(navController: NavController) {
                         selectedRoute = screen.route
                         navController.navigate(screen.route)
                     }
-                )
-            }
-            if (index < items.size - 1) {
-                Divider(
-                    color = DividerColor,
-                    modifier = Modifier
-                        .height(24.dp)
-                        .width(1.dp)
-                        .align(Alignment.CenterVertically)
                 )
             }
         }

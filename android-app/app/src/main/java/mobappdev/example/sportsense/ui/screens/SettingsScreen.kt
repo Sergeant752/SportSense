@@ -39,7 +39,15 @@ fun SettingsScreen(vm: SensorVM) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.Black)
+            .background(
+                Brush.verticalGradient(
+                    colors = listOf(
+                        Color(0xFF0D47A1),  // Djup blå
+                        Color(0xFF311B92),  // Mörk lila-blå
+                        Color(0xFF1B1F3B)   // Nästan svart
+                    )
+                )
+            )
             .padding(16.dp),
         verticalArrangement = Arrangement.Top,
         horizontalAlignment = Alignment.CenterHorizontally
