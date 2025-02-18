@@ -181,7 +181,7 @@ class BluetoothManager(private val context: Context) {
             gyroX = gyroX ?: _sensorData.value.gyroX,
             gyroY = gyroY ?: _sensorData.value.gyroY,
             gyroZ = gyroZ ?: _sensorData.value.gyroZ,
-            tag = tag
+            movementDetected = _sensorData.value.movementDetected ?: "No movement detected"  // 🔹 Använd `movementDetected` istället för `tag`
         )
 
         _sensorData.value = updatedData

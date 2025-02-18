@@ -14,5 +14,5 @@ data class SensorData(
     val gyroX: Float,
     val gyroY: Float,
     val gyroZ: Float,
-    val tag: String? = null
+    val movementDetected: String? = null
 )

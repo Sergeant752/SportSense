@@ -12,7 +12,7 @@ import mobappdev.example.sportsense.data.SensorStorage
 import mobappdev.example.sportsense.data.SensorDao
 import mobappdev.example.sportsense.data.SensorDatabase
 import mobappdev.example.sportsense.network.RetrofitInstance
-
+import java.io.File
 
 class SensorVM(application: Application) : AndroidViewModel(application) {
 
@@ -84,7 +84,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         try {
             val response = RetrofitInstance.api.analyzeData(data)
             if (response.isSuccessful && response.body() != null) {
-                val analyzedData = response.body()  // Hämta det analyserade resultatet
+                val analyzedData = response.body()
                 analyzedData?.let { results ->
                     for (record in results) {
                         val analyzedRecord = SensorData(
@@ -96,7 +96,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
                             gyroX = record.gyroX,
                             gyroY = record.gyroY,
                             gyroZ = record.gyroZ,
-                            tag = "Analyzed"
+                            movementDetected = record.movementDetected ?: "No movement"  // Uppdaterat fält
                         )
                         dao.insertSensorData(analyzedRecord)
                     }
@@ -113,6 +113,64 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
             Toast.makeText(context, "Failed to send data: ${e.message}", Toast.LENGTH_SHORT).show()
         }
     }
+
+    suspend fun fetchAnalyzedData(context: Context) {
+        try {
+            val response = RetrofitInstance.api.getAnalysis()
+            if (response.isSuccessful && response.body() != null) {
+                val analyzedData = response.body()
+                analyzedData?.let { results ->
+                    for (record in results) {
+                        val analyzedRecord = SensorData(
+                            timestamp = record.timestamp,
+                            heartRate = record.heartRate,
+                            accelX = record.accelX,
+                            accelY = record.accelY,
+                            accelZ = record.accelZ,
+                            gyroX = record.gyroX,
+                            gyroY = record.gyroY,
+                            gyroZ = record.gyroZ,
+                            movementDetected = record.movementDetected ?: "No movement"  // Uppdaterat fält
+                        )
+                        dao.insertSensorData(analyzedRecord)
+                    }
+                }
+                Toast.makeText(
+                    context,
+                    "Fetched and saved analyzed data!",
+                    Toast.LENGTH_LONG
+                ).show()
+            } else {
+                Toast.makeText(context, "Error: ${response.code()} - ${response.message()}", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(context, "Failed to fetch analysis: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
+
+
+    suspend fun downloadModel(context: Context) {
+        try {
+            val response = RetrofitInstance.api.downloadModel().execute() // 🚀 Kör requesten direkt
+
+            if (response.isSuccessful && response.body() != null) {
+                val file = File(context.filesDir, "model.pkl")
+                response.body()?.byteStream()?.use { inputStream ->
+                    file.outputStream().use { output ->
+                        inputStream.copyTo(output)
+                    }
+                }
+
+                Toast.makeText(context, "ML model downloaded successfully!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(context, "Failed to download model: ${response.code()}", Toast.LENGTH_SHORT).show()
+            }
+        } catch (e: Exception) {
+            Toast.makeText(context, "Error downloading model: ${e.message}", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     suspend fun getAllSensorData(): List<SensorData> {
         return dao.getAllSensorData()

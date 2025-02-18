@@ -24,11 +24,9 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
     val sensorData by vm.sensorData.collectAsState()
     val context = LocalContext.current
     val coroutineScope = rememberCoroutineScope()
-
     var isMeasuringHR by remember { mutableStateOf(false) }
     var isMeasuringACC by remember { mutableStateOf(false) }
     var isMeasuringGYRO by remember { mutableStateOf(false) }
-
     val db = SensorDatabase.getDatabase(context)
     val dao = db.sensorDao()
 
@@ -55,7 +53,6 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 color = Color.White
             )
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(text = "Heart rate: ${heartRate} bpm", color = Color.White)
             Spacer(modifier = Modifier.height(8.dp))
             Text(
@@ -98,8 +95,32 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     color = Color.Magenta
                 ) {
                     coroutineScope.launch {
-                        vm.sendDataToPython(context)
-                        Toast.makeText(context, "Data sent to Python for analysis!", Toast.LENGTH_SHORT).show()
+                        val recordsProcessed = vm.sendDataToPython(context)
+                        Toast.makeText(context, "Python analysis complete: $recordsProcessed records", Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceEvenly
+            ) {
+                IconWithLabel(
+                    icon = Icons.Default.CloudDownload,
+                    label = "Get Analysis",
+                    color = Color.Blue
+                ) {
+                    coroutineScope.launch {
+                        vm.fetchAnalyzedData(context)
+                    }
+                }
+                IconWithLabel(
+                    icon = Icons.Default.Download,
+                    label = "Download Model",
+                    color = Color.Yellow
+                ) {
+                    coroutineScope.launch {
+                        vm.downloadModel(context)
                     }
                 }
             }
@@ -125,9 +146,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     isMeasuringACC = !isMeasuringACC
                 }
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly
@@ -151,9 +170,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     isMeasuringGYRO = false
                 }
             }
-
             Spacer(modifier = Modifier.height(8.dp))
-
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceEvenly

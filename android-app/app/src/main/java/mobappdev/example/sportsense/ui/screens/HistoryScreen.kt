@@ -42,9 +42,11 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
     var dateFilter by remember { mutableStateOf("") }
     var hrFilter by remember { mutableStateOf("") }
 
-    // Laddar data från databasen när skärmen visas
     LaunchedEffect(Unit) {
         sensorHistory = dao.getAllSensorData()
+        coroutineScope.launch {
+            vm.fetchAnalyzedData(context)
+        }
     }
 
     val backgroundColor = Color.Black
@@ -127,10 +129,29 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
 
                     IconButton(onClick = {
                         coroutineScope.launch {
-                            vm.sendDataToPython(context)
+                            val recordsProcessed = vm.sendDataToPython(context)
+                            Toast.makeText(context, "Python analysis complete: $recordsProcessed records", Toast.LENGTH_SHORT).show()
                         }
                     }) {
                         Icon(Icons.Default.CloudUpload, contentDescription = "Send to Python", tint = Color.Magenta)
+                    }
+
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            vm.fetchAnalyzedData(context)
+                            Toast.makeText(context, "Fetched analyzed data from Python", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(Icons.Default.CloudDownload, contentDescription = "Fetch Analysis", tint = Color.Blue)
+                    }
+
+                    IconButton(onClick = {
+                        coroutineScope.launch {
+                            vm.downloadModel(context)
+                            Toast.makeText(context, "ML Model downloaded successfully!", Toast.LENGTH_SHORT).show()
+                        }
+                    }) {
+                        Icon(Icons.Default.Download, contentDescription = "Download Model", tint = Color.Yellow)
                     }
                 }
             }
@@ -227,6 +248,19 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                                         color = textColor
                                     )
                                 }
+
+                                Spacer(modifier = Modifier.height(4.dp))
+
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Icon(Icons.Default.DirectionsRun, contentDescription = "Movement", tint = Color.Cyan)
+                                    Spacer(modifier = Modifier.width(8.dp))
+                                    Text(
+                                        text = "Movement: ${data.movementDetected ?: "Unknown"}",
+                                        style = MaterialTheme.typography.bodyMedium,
+                                        color = textColor
+                                    )
+                                }
+
 
                                 Spacer(modifier = Modifier.height(4.dp))
 

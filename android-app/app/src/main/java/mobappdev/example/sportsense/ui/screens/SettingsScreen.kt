@@ -120,7 +120,7 @@ fun SettingsScreen(vm: SensorVM) {
                 ) {
                     Icon(Icons.Default.Backup, contentDescription = "Backup", tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Backup Sensor Data", color = Color.White)
+                    Text("Backup sensor data", color = Color.White)
                 }
             }
         }

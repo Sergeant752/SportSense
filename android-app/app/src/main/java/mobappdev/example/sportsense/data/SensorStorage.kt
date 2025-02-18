@@ -43,7 +43,7 @@ object SensorStorage {
         file.printWriter().use { writer ->
             writer.println("timestamp,heartRate,accelX,accelY,accelZ,gyroX,gyroY,gyroZ,tag")
             data.forEach {
-                writer.println("${it.timestamp},${it.heartRate},${it.accelX},${it.accelY},${it.accelZ},${it.gyroX},${it.gyroY},${it.gyroZ},${it.tag ?: ""}")
+                writer.println("${it.timestamp},${it.heartRate},${it.accelX},${it.accelY},${it.accelZ},${it.gyroX},${it.gyroY},${it.gyroZ},${it.movementDetected ?: ""}")
             }
         }
         return file.absolutePath
