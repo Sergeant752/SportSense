@@ -27,6 +27,7 @@ def create_table():
     conn.commit()
     conn.close()
 
+
 # 🔹 Endpoint för att ta emot data från Android
 @app.route('/analyze', methods=['POST'])
 def analyze_data():
@@ -34,6 +35,8 @@ def analyze_data():
         data = request.get_json()
         if not data:
             return jsonify({"status": "error", "message": "No data received"}), 400
+
+        print("📡 Received Data:", json.dumps(data, indent=4))  # 🔥 Logga inkommande data
 
         # 🔹 Spara data i SQLite
         conn = get_db_connection()
@@ -53,6 +56,7 @@ def analyze_data():
         return jsonify(analyzed_data), 200
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
+
 
 # 🔹 Endpoint för att hämta analyserad data
 @app.route('/get-analysis', methods=['GET'])
