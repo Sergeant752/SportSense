@@ -6,12 +6,14 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.navArgument
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.ui.screens.*
+import mobappdev.example.sportsense.ui.viewmodels.ChatVM
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
@@ -110,6 +112,12 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             exitTransition = { fadeOut(animationSpec = tween(300)) }
         ) {
             OtherScreen(navController = navController, userViewModel = userViewModel)
+        }
+
+        composable("chat") {
+            val chatVM: ChatVM = viewModel()
+            val username = userViewModel.getCurrentUser() ?: "Guest"
+            ChatScreen(vm = chatVM, navController = navController, username = username)
         }
     }
 }

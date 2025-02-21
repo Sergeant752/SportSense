@@ -50,8 +50,18 @@ fun OtherScreen(navController: NavController, userViewModel: UserViewModel) {
             ),
         contentAlignment = Alignment.Center
     ) {
-        Column(modifier = Modifier.fillMaxSize().padding(16.dp), horizontalAlignment = Alignment.CenterHorizontally) {
-            Text("Other users' data", style = MaterialTheme.typography.headlineMedium, color = Color.Yellow, modifier = Modifier.align(Alignment.CenterHorizontally))
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                "Other users' data",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Yellow,
+                modifier = Modifier.align(Alignment.CenterHorizontally)
+            )
             Spacer(modifier = Modifier.height(16.dp))
 
             LazyColumn {
@@ -69,6 +79,15 @@ fun OtherScreen(navController: NavController, userViewModel: UserViewModel) {
                         }
                     }
                 }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            Button(
+                onClick = { navController.navigate("chat") },
+                colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan)
+            ) {
+                Text("Open Chat", color = Color.Black)
             }
         }
     }

@@ -11,8 +11,8 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.History
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.ui.draw.scale
@@ -33,9 +33,9 @@ val SettingsColor = Color(0xFF4CAF50)
 
 sealed class Screen(val route: String, val icon: ImageVector, val label: String, val color: Color) {
     object Home : Screen("home", Icons.Filled.Home, "Home", HomeColor)
-    object History : Screen("history", Icons.Filled.History, "History", HistoryColor)
-    object Settings : Screen("settings", Icons.Filled.Settings, "Settings", SettingsColor)
     object Others : Screen("others", Icons.Filled.People, "Others", Color.Cyan)
+    object Settings : Screen("settings", Icons.Filled.Settings, "Settings", SettingsColor)
+    object Chat : Screen("chat", Icons.Filled.Chat, "Chat", Color.Magenta)
 }
 
 @Composable
@@ -52,7 +52,7 @@ fun BottomNavBar(navController: NavController) {
             tonalElevation = 0.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val items = listOf(Screen.Home, Screen.History, Screen.Settings, Screen.Others)
+            val items = listOf(Screen.Home, Screen.Others, Screen.Settings, Screen.Chat)
 
             items.forEach { screen ->
                 val isSelected = screen.route == selectedRoute

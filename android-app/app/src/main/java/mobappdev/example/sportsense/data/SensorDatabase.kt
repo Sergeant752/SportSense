@@ -5,11 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [SensorData::class, User::class], version = 3, exportSchema = false)
+@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 4, exportSchema = false)
 abstract class SensorDatabase : RoomDatabase() {
-
     abstract fun sensorDao(): SensorDao
     abstract fun userDao(): UserDao
+    abstract fun chatDao(): ChatDao
 
     companion object {
         @Volatile
@@ -21,7 +21,9 @@ abstract class SensorDatabase : RoomDatabase() {
                     context.applicationContext,
                     SensorDatabase::class.java,
                     "sensor_database"
-                ).fallbackToDestructiveMigration().build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
