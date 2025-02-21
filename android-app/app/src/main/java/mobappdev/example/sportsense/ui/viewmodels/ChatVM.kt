@@ -1,6 +1,7 @@
 package mobappdev.example.sportsense.ui.viewmodels
 
 import android.app.Application
+import android.content.Context
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
@@ -14,6 +15,7 @@ import mobappdev.example.sportsense.notifications.NotificationHelper
 class ChatVM(application: Application) : AndroidViewModel(application) {
     private val chatDao: ChatDao = SensorDatabase.getDatabase(application).chatDao()
     private val _unreadMessageCount = chatDao.getUnreadMessageCount("").asLiveData()
+    private val appContext: Context = application.applicationContext
 
     fun getMessagesForUser(username: String): LiveData<List<ChatMessage>> {
         return chatDao.getMessagesForUser(username).asLiveData()
@@ -30,7 +32,7 @@ class ChatVM(application: Application) : AndroidViewModel(application) {
         viewModelScope.launch {
             chatDao.insertMessage(chatMessage)
             updateUnreadMessageCount(recipient)
-            //NotificationHelper.sendNotification(context, "New message from $sender", message)
+            NotificationHelper.sendNotification(appContext, "New message from $sender", message)
         }
     }
 
