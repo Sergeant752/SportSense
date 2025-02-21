@@ -15,15 +15,36 @@ class ChatVM(application: Application) : AndroidViewModel(application) {
     fun getMessagesForUser(username: String) = chatDao.getMessagesForUser(username).asLiveData()
 
     fun sendMessage(sender: String, recipient: String, message: String) {
-        val chatMessage = ChatMessage(sender = sender, recipient = recipient, message = message, timestamp = System.currentTimeMillis())
+        val chatMessage = ChatMessage(
+            sender = sender,
+            recipient = recipient,
+            message = message,
+            timestamp = System.currentTimeMillis(),
+            isRead = 0
+        )
         viewModelScope.launch {
             chatDao.insertMessage(chatMessage)
         }
     }
 
-    fun clearChatForUser(username: String) {
+    fun clearChatForUser(username: String, period: String) {
         viewModelScope.launch {
-            chatDao.clearChatForUser(username)
+            val currentTime = System.currentTimeMillis()
+            val timeLimit = when (period) {
+                "today" -> currentTime - 24 * 60 * 60 * 1000
+                "week" -> currentTime - 7 * 24 * 60 * 60 * 1000
+                "all" -> 0L
+                else -> return@launch
+            }
+            chatDao.clearChatForUser(username, timeLimit)
+        }
+    }
+
+    fun getUnreadMessageCount(username: String) = chatDao.getUnreadMessageCount(username).asLiveData()
+
+    fun markMessagesAsRead(username: String) {
+        viewModelScope.launch {
+            chatDao.markMessagesAsRead(username)
         }
     }
 }

@@ -31,6 +31,7 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
     val registeredUsers by userViewModel.getAllUsers().collectAsState(initial = emptyList())
     var text by remember { mutableStateOf(TextFieldValue("")) }
     var selectedRecipient by remember { mutableStateOf<String?>(null) }
+    var clearChatMenuExpanded by remember { mutableStateOf(false) }
 
     Column(
         modifier = Modifier
@@ -44,28 +45,36 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
     ) {
         Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
             Text("Chat", color = Color.White, style = MaterialTheme.typography.headlineSmall)
-            var expanded by remember { mutableStateOf(false) }
-            Box {
-                Button(
-                    onClick = { expanded = true },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Gray)
-                ) {
-                    Text(text = selectedRecipient ?: "Send To", color = Color.White)
-                    Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown", tint = Color.White)
-                }
-                DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                    registeredUsers.forEach { user ->
-                        DropdownMenuItem(
-                            text = { Text(user.username) },
-                            onClick = {
-                                selectedRecipient = user.username
-                                expanded = false
-                            }
-                        )
+
+            Row {
+                var expanded by remember { mutableStateOf(false) }
+                Box {
+                    Button(
+                        onClick = { expanded = true },
+                        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
+                    ) {
+                        Text(text = selectedRecipient ?: "Send To", color = Color.White)
+                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown", tint = Color.White)
                     }
+                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
+                        registeredUsers.filter { it.username != username }.forEach { user ->
+                            DropdownMenuItem(
+                                text = { Text(user.username) },
+                                onClick = {
+                                    selectedRecipient = user.username
+                                    expanded = false
+                                }
+                            )
+                        }
+                    }
+                }
+
+                IconButton(onClick = { clearChatMenuExpanded = true }) {
+                    Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color.Red)
                 }
             }
         }
+
         LazyColumn(
             modifier = Modifier.weight(1f),
             reverseLayout = true
@@ -74,6 +83,7 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
                 ChatMessageItem(message)
             }
         }
+
         Row(
             modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
             horizontalArrangement = Arrangement.SpaceBetween
@@ -102,18 +112,35 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
                 )
             }
         }
-        Spacer(modifier = Modifier.height(8.dp))
-        Button(
-            onClick = {
-                chatVM.clearChatForUser(username)
-                Toast.makeText(context, "Chat history cleared!", Toast.LENGTH_SHORT).show()
-            },
-            colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
-            modifier = Modifier.fillMaxWidth()
+
+        DropdownMenu(
+            expanded = clearChatMenuExpanded,
+            onDismissRequest = { clearChatMenuExpanded = false }
         ) {
-            Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color.White)
-            Spacer(modifier = Modifier.width(8.dp))
-            Text("Clear Chat")
+            DropdownMenuItem(
+                text = { Text("Clear Today") },
+                onClick = {
+                    chatVM.clearChatForUser(username, "today")
+                    clearChatMenuExpanded = false
+                    Toast.makeText(context, "Today's chat cleared!", Toast.LENGTH_SHORT).show()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Clear Week") },
+                onClick = {
+                    chatVM.clearChatForUser(username, "week")
+                    clearChatMenuExpanded = false
+                    Toast.makeText(context, "Week's chat cleared!", Toast.LENGTH_SHORT).show()
+                }
+            )
+            DropdownMenuItem(
+                text = { Text("Clear All") },
+                onClick = {
+                    chatVM.clearChatForUser(username, "all")
+                    clearChatMenuExpanded = false
+                    Toast.makeText(context, "All chat cleared!", Toast.LENGTH_SHORT).show()
+                }
+            )
         }
     }
 }

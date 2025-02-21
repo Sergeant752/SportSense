@@ -13,6 +13,7 @@ import mobappdev.example.sportsense.ui.navigation.NavGraph
 import mobappdev.example.sportsense.ui.theme.AppTheme
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
+import mobappdev.example.sportsense.ui.viewmodels.ChatVM
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -21,17 +22,18 @@ class MainActivity : ComponentActivity() {
             AppTheme {
                 val sensorViewModel = SensorVM(application = application)
                 val userViewModel = UserViewModel(application = application)
+                val chatViewModel = ChatVM(application = application)
                 val navController = rememberNavController()
 
                 Scaffold(
                     topBar = { TopBar(title = "SportSense") },
-                    bottomBar = { BottomNavBar(navController) }
+                    bottomBar = { BottomNavBar(navController, chatViewModel, userViewModel.getCurrentUser() ?: "Guest") } // ✅ Skickar in chatVM & username
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavGraph(
                             navController = navController,
                             sensorVM = sensorViewModel,
-                            userViewModel = userViewModel
+                            userViewModel = userViewModel,
                         )
                     }
                 }

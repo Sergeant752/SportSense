@@ -1,5 +1,6 @@
 package mobappdev.example.sportsense.data
 
+import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 
@@ -9,5 +10,6 @@ data class ChatMessage(
     val sender: String,
     val recipient: String,
     val message: String,
-    val timestamp: Long
+    val timestamp: Long,
+    @ColumnInfo(name = "is_read") val isRead: Int = 0
 )

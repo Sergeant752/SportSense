@@ -5,7 +5,7 @@ import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 5, exportSchema = true)
+@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 6, exportSchema = true)
 abstract class SensorDatabase : RoomDatabase() {
     abstract fun sensorDao(): SensorDao
     abstract fun userDao(): UserDao
@@ -39,8 +39,7 @@ abstract class SensorDatabase : RoomDatabase() {
 
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE user ADD COLUMN profile_picture TEXT DEFAULT NULL")
-                database.execSQL("ALTER TABLE chat_messages ADD COLUMN is_read INTEGER DEFAULT 0 NOT NULL")
+                database.execSQL("ALTER TABLE chat_messages ADD COLUMN is_read INTEGER DEFAULT 0 NOT NULL") // 🔹 Korrekt kolumnnamn
             }
         }
     }

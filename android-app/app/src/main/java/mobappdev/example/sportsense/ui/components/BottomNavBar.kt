@@ -15,10 +15,13 @@ import androidx.compose.material.icons.filled.Chat
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.People
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavController
 import mobappdev.example.sportsense.ui.theme.LightBlue40
+import mobappdev.example.sportsense.ui.viewmodels.ChatVM
 
 val BottomNavGradient = Brush.verticalGradient(
     colors = listOf(
@@ -38,9 +41,11 @@ sealed class Screen(val route: String, val icon: ImageVector, val label: String,
     object Chat : Screen("chat", Icons.Filled.Chat, "Chat", Color.Magenta)
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BottomNavBar(navController: NavController) {
+fun BottomNavBar(navController: NavController, chatVM: ChatVM, username: String) {
     var selectedRoute by remember { mutableStateOf("home") }
+    val unreadMessages by chatVM.getUnreadMessageCount(username).observeAsState(0)
 
     Box(
         modifier = Modifier
@@ -61,12 +66,24 @@ fun BottomNavBar(navController: NavController) {
 
                 NavigationBarItem(
                     icon = {
-                        Icon(
-                            screen.icon,
-                            contentDescription = screen.label,
-                            tint = animatedColor,
-                            modifier = Modifier.scale(animatedSize)
-                        )
+                        Box {
+                            Icon(
+                                screen.icon,
+                                contentDescription = screen.label,
+                                tint = animatedColor,
+                                modifier = Modifier.scale(animatedSize)
+                            )
+                            if (screen is Screen.Chat && unreadMessages > 0) {
+                                Badge(
+                                    containerColor = Color.Red,
+                                    modifier = Modifier
+                                        .size(12.dp)
+                                        .align(Alignment.TopEnd)
+                                ) {
+                                    Text(text = unreadMessages.toString(), color = Color.White)
+                                }
+                            }
+                        }
                     },
                     label = {
                         Text(
@@ -78,6 +95,9 @@ fun BottomNavBar(navController: NavController) {
                     onClick = {
                         selectedRoute = screen.route
                         navController.navigate(screen.route)
+                        if (screen is Screen.Chat) {
+                            chatVM.markMessagesAsRead(username)
+                        }
                     }
                 )
             }
