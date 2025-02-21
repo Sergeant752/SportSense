@@ -5,7 +5,7 @@ import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 7, exportSchema = true)
+@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 8, exportSchema = true)
 abstract class SensorDatabase : RoomDatabase() {
     abstract fun sensorDao(): SensorDao
     abstract fun userDao(): UserDao
@@ -22,7 +22,7 @@ abstract class SensorDatabase : RoomDatabase() {
                     SensorDatabase::class.java,
                     "sensor_database"
                 )
-                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7, MIGRATION_7_8)
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .build()
                 INSTANCE = instance
@@ -39,13 +39,20 @@ abstract class SensorDatabase : RoomDatabase() {
 
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE chat_messages ADD COLUMN is_read INTEGER DEFAULT 0 NOT NULL") // 🔹 Se till att kolumnnamnet stämmer
+                database.execSQL("ALTER TABLE chat_messages ADD COLUMN is_read INTEGER DEFAULT 0 NOT NULL")
             }
         }
 
         val MIGRATION_6_7 = object : Migration(6, 7) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                // 🔹 Förbered för framtida ändringar här, just nu behövs inget.
+                // Förbered för framtida ändringar, ingen ändring nu
+            }
+        }
+
+        val MIGRATION_7_8 = object : Migration(7, 8) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // 🔹 Skapa en ny kolumn `chat_id` för att identifiera separata chattar
+                database.execSQL("ALTER TABLE chat_messages ADD COLUMN chat_id TEXT NOT NULL DEFAULT ''")
             }
         }
     }

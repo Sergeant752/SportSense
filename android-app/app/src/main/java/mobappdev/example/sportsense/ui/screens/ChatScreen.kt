@@ -5,42 +5,41 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowDropDown
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material.icons.filled.Send
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.input.TextFieldValue
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import mobappdev.example.sportsense.data.ChatMessage
 import mobappdev.example.sportsense.ui.viewmodels.ChatVM
 import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
+import java.text.SimpleDateFormat
+import java.util.*
 
 @Composable
-fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavController, username: String) {
-    val messages by chatVM.getMessagesForUser(username).observeAsState(emptyList())
+fun ChatScreen(
+    chatVM: ChatVM,
+    userViewModel: UserViewModel,
+    navController: NavController,
+    currentUser: String,
+    recipient: String
+) {
+    val messages by chatVM.getMessagesForChat(currentUser, recipient).observeAsState(emptyList())
     val context = LocalContext.current
-
-    val registeredUsers by userViewModel.getAllUsers().collectAsState(initial = emptyList())
     var text by remember { mutableStateOf(TextFieldValue("")) }
-    var selectedRecipient by remember { mutableStateOf<String?>(null) }
     var clearChatMenuExpanded by remember { mutableStateOf(false) }
-
-    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
-    LaunchedEffect(isLoggedIn) {
-        if (!isLoggedIn) {
-            Toast.makeText(context, "Sign in/Register to access this page", Toast.LENGTH_LONG).show()
-            navController.navigate("login")
-        }
-    }
-    if (!isLoggedIn) return
 
     Column(
         modifier = Modifier
@@ -52,76 +51,63 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
             )
             .padding(16.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.SpaceBetween) {
-            Text("Chat", color = Color.White, style = MaterialTheme.typography.headlineSmall)
+        // 🔹 Top bar with recipient's name and clear chat option
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                text = "Chat with $recipient",
+                color = Color.White,
+                style = MaterialTheme.typography.headlineSmall
+            )
 
-            Row {
-                var expanded by remember { mutableStateOf(false) }
-                Box {
-                    Button(
-                        onClick = { expanded = true },
-                        colors = ButtonDefaults.buttonColors(containerColor = Color.Blue)
-                    ) {
-                        Text(text = selectedRecipient ?: "Send To", color = Color.White)
-                        Icon(Icons.Default.ArrowDropDown, contentDescription = "Dropdown", tint = Color.White)
-                    }
-                    DropdownMenu(expanded = expanded, onDismissRequest = { expanded = false }) {
-                        registeredUsers.filter { it.username != username }.forEach { user ->
-                            DropdownMenuItem(
-                                text = { Text(user.username) },
-                                onClick = {
-                                    selectedRecipient = user.username
-                                    expanded = false
-                                }
-                            )
-                        }
-                    }
-                }
-
-                IconButton(onClick = { clearChatMenuExpanded = true }) {
-                    Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color.Red)
-                }
+            IconButton(onClick = { clearChatMenuExpanded = true }) {
+                Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color.Red)
             }
         }
 
+        // 🔹 Messages List
         LazyColumn(
             modifier = Modifier.weight(1f),
             reverseLayout = true
         ) {
             items(messages) { message ->
-                ChatMessageItem(message)
+                ChatMessageItem(message, currentUser)
             }
         }
 
+        // 🔹 Message Input Row
         Row(
-            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-            horizontalArrangement = Arrangement.SpaceBetween
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(top = 8.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
             BasicTextField(
                 value = text,
                 onValueChange = { text = it },
                 modifier = Modifier
                     .weight(1f)
-                    .background(Color.White, MaterialTheme.shapes.small)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.White)
                     .padding(8.dp)
             )
             IconButton(
                 onClick = {
-                    if (!selectedRecipient.isNullOrEmpty() && text.text.isNotEmpty()) {
-                        chatVM.sendMessage(username, selectedRecipient!!, text.text)
+                    if (text.text.isNotEmpty()) {
+                        chatVM.sendMessage(currentUser, recipient, text.text)
                         text = TextFieldValue("")
                     }
-                },
-                enabled = !selectedRecipient.isNullOrEmpty()
+                }
             ) {
-                Icon(
-                    Icons.Default.Send,
-                    contentDescription = "Send",
-                    tint = if (selectedRecipient.isNullOrEmpty()) Color.Gray else Color.Green
-                )
+                Icon(Icons.Default.Send, contentDescription = "Send", tint = Color.Green)
             }
         }
 
+        // 🔹 Clear Chat Dropdown Menu
         DropdownMenu(
             expanded = clearChatMenuExpanded,
             onDismissRequest = { clearChatMenuExpanded = false }
@@ -129,7 +115,7 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
             DropdownMenuItem(
                 text = { Text("Clear Today") },
                 onClick = {
-                    chatVM.clearChatForUser(username, "today")
+                    chatVM.clearChat(currentUser, recipient, "today")
                     clearChatMenuExpanded = false
                     Toast.makeText(context, "Today's chat cleared!", Toast.LENGTH_SHORT).show()
                 }
@@ -137,7 +123,7 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
             DropdownMenuItem(
                 text = { Text("Clear Week") },
                 onClick = {
-                    chatVM.clearChatForUser(username, "week")
+                    chatVM.clearChat(currentUser, recipient, "week")
                     clearChatMenuExpanded = false
                     Toast.makeText(context, "Week's chat cleared!", Toast.LENGTH_SHORT).show()
                 }
@@ -145,7 +131,7 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
             DropdownMenuItem(
                 text = { Text("Clear All") },
                 onClick = {
-                    chatVM.clearChatForUser(username, "all")
+                    chatVM.clearChat(currentUser, recipient, "all")
                     clearChatMenuExpanded = false
                     Toast.makeText(context, "All chat cleared!", Toast.LENGTH_SHORT).show()
                 }
@@ -154,10 +140,49 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
     }
 }
 
+// 🔹 Updated Chat Message UI
 @Composable
-fun ChatMessageItem(message: mobappdev.example.sportsense.data.ChatMessage) {
-    Column(modifier = Modifier.padding(8.dp)) {
-        Text(text = "${message.sender} → ${message.recipient}", color = Color.Cyan, style = MaterialTheme.typography.bodySmall)
-        Text(text = message.message, color = Color.White, style = MaterialTheme.typography.bodyMedium)
+fun ChatMessageItem(message: ChatMessage, currentUser: String) {
+    val isSentByCurrentUser = message.sender == currentUser
+    val backgroundColor = if (isSentByCurrentUser) Color(0xFF1976D2) else Color(0xFF42A5F5)
+    val alignment = if (isSentByCurrentUser) Alignment.End else Alignment.Start
+
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = if (isSentByCurrentUser) Arrangement.End else Arrangement.Start
+    ) {
+        Card(
+            modifier = Modifier
+                .padding(8.dp)
+                .widthIn(max = 280.dp),
+            elevation = CardDefaults.cardElevation(defaultElevation = 4.dp),
+            colors = CardDefaults.cardColors(containerColor = backgroundColor)
+        ) {
+            Column(modifier = Modifier.padding(12.dp)) {
+                Text(
+                    text = if (isSentByCurrentUser) "You" else message.sender,
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = message.message,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = Color.White
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Text(
+                    text = formatTimestamp(message.timestamp),
+                    style = MaterialTheme.typography.bodySmall,
+                    color = Color.White.copy(alpha = 0.7f)
+                )
+            }
+        }
     }
+}
+
+// 🔹 Function to format timestamp
+fun formatTimestamp(timestamp: Long): String {
+    val sdf = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
+    return sdf.format(Date(timestamp))
 }

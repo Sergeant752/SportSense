@@ -31,14 +31,15 @@ val BottomNavGradient = Brush.verticalGradient(
 )
 
 val HomeColor = LightBlue40
-val HistoryColor = Color.Magenta
+val OthersColor = Color.Cyan
 val SettingsColor = Color(0xFF4CAF50)
+val ChatColor = Color.Magenta
 
 sealed class Screen(val route: String, val icon: ImageVector, val label: String, val color: Color) {
     object Home : Screen("home", Icons.Filled.Home, "Home", HomeColor)
-    object Others : Screen("others", Icons.Filled.People, "Others", Color.Cyan)
+    object Others : Screen("others", Icons.Filled.People, "Others", OthersColor)
     object Settings : Screen("settings", Icons.Filled.Settings, "Settings", SettingsColor)
-    object Chat : Screen("chat", Icons.Filled.Chat, "Chat", Color.Magenta)
+    object ChatList : Screen("user_list", Icons.Filled.Chat, "Chat", ChatColor)  // Ändrad för att gå till user_list
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -57,7 +58,7 @@ fun BottomNavBar(navController: NavController, chatVM: ChatVM, username: String)
             tonalElevation = 0.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
-            val items = listOf(Screen.Home, Screen.Others, Screen.Settings, Screen.Chat)
+            val items = listOf(Screen.Home, Screen.Others, Screen.Settings, Screen.ChatList)
 
             items.forEach { screen ->
                 val isSelected = screen.route == selectedRoute
@@ -73,7 +74,7 @@ fun BottomNavBar(navController: NavController, chatVM: ChatVM, username: String)
                                 tint = animatedColor,
                                 modifier = Modifier.scale(animatedSize)
                             )
-                            if (screen is Screen.Chat && unreadMessages > 0) {
+                            if (screen is Screen.ChatList && unreadMessages > 0) {
                                 Badge(
                                     containerColor = Color.Red,
                                     modifier = Modifier
@@ -94,8 +95,12 @@ fun BottomNavBar(navController: NavController, chatVM: ChatVM, username: String)
                     selected = isSelected,
                     onClick = {
                         selectedRoute = screen.route
-                        navController.navigate(screen.route)
-                        if (screen is Screen.Chat) {
+                        if (screen is Screen.ChatList) {
+                            navController.navigate("user_list")  // Navigera till listan över användare
+                        } else {
+                            navController.navigate(screen.route)
+                        }
+                        if (screen is Screen.ChatList) {
                             chatVM.markMessagesAsRead(username)
                         }
                     }

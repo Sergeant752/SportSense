@@ -19,15 +19,13 @@ import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
 @Composable
 fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel: UserViewModel) {
+    val chatVM: ChatVM = viewModel()  // Skapa en instans av ChatVM
+
     NavHost(
         navController = navController,
         startDestination = "login"
     ) {
-        composable(
-            "login",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) {
+        composable("login") {
             LoginScreen(
                 navController = navController,
                 userViewModel = userViewModel,
@@ -36,11 +34,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             )
         }
 
-        composable(
-            "register",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) {
+        composable("register") {
             RegisterScreen(
                 navController = navController,
                 userViewModel = userViewModel,
@@ -48,47 +42,21 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             )
         }
 
-        composable(
-            "home",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { MainScreen(vm = sensorVM, userViewModel = userViewModel ,navController = navController) }
+        composable("home") {
+            MainScreen(vm = sensorVM, userViewModel = userViewModel ,navController = navController)
+        }
 
-        composable(
-            "scan",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { ScanScreen(vm = sensorVM, navController = navController) }
+        composable("scan") { ScanScreen(vm = sensorVM, navController = navController) }
 
-        composable(
-            "history",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { HistoryScreen(navController = navController, vm = sensorVM , userViewModel = userViewModel) }
+        composable("history") { HistoryScreen(navController = navController, vm = sensorVM, userViewModel = userViewModel) }
 
-        composable(
-            "train_ai",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { TrainAIScreen() }
+        composable("train_ai") { TrainAIScreen() }
 
-        composable(
-            "import_model",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { ImportModelScreen() }
+        composable("import_model") { ImportModelScreen() }
 
-        composable(
-            "settings",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { SettingsScreen(navController = navController,vm = sensorVM, userViewModel = userViewModel) }
+        composable("settings") { SettingsScreen(navController = navController, vm = sensorVM, userViewModel = userViewModel) }
 
-        composable(
-            "hr_graph",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) {
+        composable("hr_graph") {
             val sensorData = remember { mutableStateOf<List<SensorData>>(emptyList()) }
             LaunchedEffect(Unit) {
                 sensorData.value = sensorVM.getAllSensorData()
@@ -98,30 +66,39 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
 
         composable(
             route = "monitor/{deviceId}",
-            arguments = listOf(navArgument("deviceId") { defaultValue = "Unknown Device" }),
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
+            arguments = listOf(navArgument("deviceId") { defaultValue = "Unknown Device" })
         ) { backStackEntry ->
             val deviceId = backStackEntry.arguments?.getString("deviceId") ?: "Unknown Device"
             MonitorScreen(vm = sensorVM, navController = navController, deviceId = deviceId)
         }
 
-        composable(
-            "others",
-            enterTransition = { fadeIn(animationSpec = tween(300)) },
-            exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) {
-            OtherScreen(navController = navController, userViewModel = userViewModel)
+        composable("others") { OtherScreen(navController = navController, userViewModel = userViewModel) }
+
+        composable("user_list") {
+            val username = userViewModel.getCurrentUser() ?: "Guest"
+            UserListScreen(navController = navController, userViewModel = userViewModel, currentUser = username)
         }
 
-        composable("chat") {
+        // 🔹 Uppdaterad chat-navigation
+        composable(
+            route = "chat/{currentUser}/{recipient}",
+            arguments = listOf(
+                navArgument("currentUser") { defaultValue = "Guest" },
+                navArgument("recipient") { defaultValue = "Unknown" }
+            ),
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) { backStackEntry ->
             val chatVM: ChatVM = viewModel()
-            val username = userViewModel.getCurrentUser() ?: "Guest"
+            val currentUser = backStackEntry.arguments?.getString("currentUser") ?: "Guest"
+            val recipient = backStackEntry.arguments?.getString("recipient") ?: "Unknown"
+
             ChatScreen(
                 chatVM = chatVM,
                 userViewModel = userViewModel,
                 navController = navController,
-                username = username
+                currentUser = currentUser,
+                recipient = recipient
             )
         }
     }

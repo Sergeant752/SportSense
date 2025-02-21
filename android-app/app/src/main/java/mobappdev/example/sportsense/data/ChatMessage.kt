@@ -11,5 +11,6 @@ data class ChatMessage(
     val recipient: String,
     val message: String,
     val timestamp: Long,
+    val chat_id: String,
     @ColumnInfo(name = "is_read") val isRead: Int = 0
 )

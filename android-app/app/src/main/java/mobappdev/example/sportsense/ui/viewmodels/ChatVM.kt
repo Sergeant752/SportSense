@@ -14,24 +14,27 @@ import mobappdev.example.sportsense.notifications.NotificationHelper
 
 class ChatVM(application: Application) : AndroidViewModel(application) {
     private val chatDao: ChatDao = SensorDatabase.getDatabase(application).chatDao()
-    private val _unreadMessageCount = chatDao.getUnreadMessageCount("").asLiveData()
     private val appContext: Context = application.applicationContext
 
-    fun getMessagesForUser(username: String): LiveData<List<ChatMessage>> {
-        return chatDao.getMessagesForUser(username).asLiveData()
+    fun getMessagesForChat(user1: String, user2: String): LiveData<List<ChatMessage>> {
+        val chatId = listOf(user1, user2).sorted().joinToString("_")
+        return chatDao.getMessagesForChat(chatId).asLiveData()
     }
 
     fun sendMessage(sender: String, recipient: String, message: String) {
+        val chatId = listOf(sender, recipient).sorted().joinToString("_")
+
         val chatMessage = ChatMessage(
             sender = sender,
             recipient = recipient,
             message = message,
             timestamp = System.currentTimeMillis(),
+            chat_id = chatId,
             isRead = 0
         )
+
         viewModelScope.launch {
             chatDao.insertMessage(chatMessage)
-            updateUnreadMessageCount(recipient)
             NotificationHelper.sendNotification(appContext, "New message from $sender", message)
         }
     }
@@ -40,20 +43,14 @@ class ChatVM(application: Application) : AndroidViewModel(application) {
         return chatDao.getUnreadMessageCount(username).asLiveData()
     }
 
-    private fun updateUnreadMessageCount(username: String) {
-        viewModelScope.launch {
-            chatDao.getUnreadMessageCount(username)
-        }
-    }
-
     fun markMessagesAsRead(username: String) {
         viewModelScope.launch {
             chatDao.markMessagesAsRead(username)
-            updateUnreadMessageCount(username)
         }
     }
 
-    fun clearChatForUser(username: String, period: String) {
+    fun clearChat(user1: String, user2: String, period: String) {
+        val chatId = listOf(user1, user2).sorted().joinToString("_")
         viewModelScope.launch {
             val currentTime = System.currentTimeMillis()
             val timeLimit = when (period) {
@@ -62,8 +59,7 @@ class ChatVM(application: Application) : AndroidViewModel(application) {
                 "all" -> 0L
                 else -> return@launch
             }
-            chatDao.clearChatForUser(username, timeLimit)
-            updateUnreadMessageCount(username)
+            chatDao.clearChat(chatId, timeLimit)
         }
     }
 }
