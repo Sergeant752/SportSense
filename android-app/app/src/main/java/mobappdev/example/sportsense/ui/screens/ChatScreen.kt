@@ -51,24 +51,21 @@ fun ChatScreen(
             )
             .padding(16.dp)
     ) {
-        // 🔹 Top bar with recipient's name and clear chat option
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "Chat with $recipient",
-                color = Color.White,
+                text = "Messaging: $recipient",
+                color = Color.Yellow,
                 style = MaterialTheme.typography.headlineSmall
             )
-
             IconButton(onClick = { clearChatMenuExpanded = true }) {
                 Icon(Icons.Default.Delete, contentDescription = "Clear Chat", tint = Color.Red)
             }
         }
 
-        // 🔹 Messages List
         LazyColumn(
             modifier = Modifier.weight(1f),
             reverseLayout = true
@@ -78,7 +75,6 @@ fun ChatScreen(
             }
         }
 
-        // 🔹 Message Input Row
         Row(
             modifier = Modifier
                 .fillMaxWidth()
@@ -107,7 +103,6 @@ fun ChatScreen(
             }
         }
 
-        // 🔹 Clear Chat Dropdown Menu
         DropdownMenu(
             expanded = clearChatMenuExpanded,
             onDismissRequest = { clearChatMenuExpanded = false }
@@ -140,11 +135,10 @@ fun ChatScreen(
     }
 }
 
-// 🔹 Updated Chat Message UI
 @Composable
 fun ChatMessageItem(message: ChatMessage, currentUser: String) {
     val isSentByCurrentUser = message.sender == currentUser
-    val backgroundColor = if (isSentByCurrentUser) Color(0xFF1976D2) else Color(0xFF42A5F5)
+    val backgroundColor = if (isSentByCurrentUser) Color(0xFFB71C1C) else Color(0xFF1976D2   )
     val alignment = if (isSentByCurrentUser) Alignment.End else Alignment.Start
 
     Row(
@@ -181,7 +175,6 @@ fun ChatMessageItem(message: ChatMessage, currentUser: String) {
     }
 }
 
-// 🔹 Function to format timestamp
 fun formatTimestamp(timestamp: Long): String {
     val sdf = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))

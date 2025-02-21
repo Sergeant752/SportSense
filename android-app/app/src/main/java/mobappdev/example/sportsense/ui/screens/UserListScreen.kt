@@ -33,14 +33,23 @@ fun UserListScreen(navController: NavController, userViewModel: UserViewModel, c
             )
             .padding(16.dp)
     ) {
-        Text(
-            text = "Select a user to chat with",
-            style = MaterialTheme.typography.headlineMedium,
-            color = Color.White
-        )
-
-        Spacer(modifier = Modifier.height(8.dp))
-
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Text(
+                text = "Contacts",
+                style = MaterialTheme.typography.headlineMedium,
+                color = Color.Yellow
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = "Message a contact",
+                style = MaterialTheme.typography.bodySmall, // Mindre textstil
+                color = Color.Yellow
+            )
+        }
+        Spacer(modifier = Modifier.height(16.dp))
         LazyColumn {
             items(registeredUsers) { user ->
                 if (user.username != currentUser) {
