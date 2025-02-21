@@ -17,6 +17,6 @@ interface ChatDao {
     @Query("SELECT COUNT(*) FROM chat_messages WHERE recipient = :username AND is_read = 0")
     fun getUnreadMessageCount(username: String): Flow<Int>
 
-    @Query("UPDATE chat_messages SET is_Read = 1 WHERE recipient = :username")
+    @Query("UPDATE chat_messages SET is_read = 1 WHERE recipient = :username AND is_read = 0")
     suspend fun markMessagesAsRead(username: String)
 }

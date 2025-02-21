@@ -24,16 +24,17 @@ class MainActivity : ComponentActivity() {
                 val userViewModel = UserViewModel(application = application)
                 val chatViewModel = ChatVM(application = application)
                 val navController = rememberNavController()
+                val username = userViewModel.getCurrentUser() ?: "Guest"
 
                 Scaffold(
                     topBar = { TopBar(title = "SportSense") },
-                    bottomBar = { BottomNavBar(navController, chatViewModel, userViewModel.getCurrentUser() ?: "Guest") } // ✅ Skickar in chatVM & username
+                    bottomBar = { BottomNavBar(navController, chatViewModel, username) }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
                         NavGraph(
                             navController = navController,
                             sensorVM = sensorViewModel,
-                            userViewModel = userViewModel,
+                            userViewModel = userViewModel
                         )
                     }
                 }

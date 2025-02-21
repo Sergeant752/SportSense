@@ -77,7 +77,7 @@ fun BottomNavBar(navController: NavController, chatVM: ChatVM, username: String)
                                 Badge(
                                     containerColor = Color.Red,
                                     modifier = Modifier
-                                        .size(12.dp)
+                                        .size(16.dp)
                                         .align(Alignment.TopEnd)
                                 ) {
                                     Text(text = unreadMessages.toString(), color = Color.White)

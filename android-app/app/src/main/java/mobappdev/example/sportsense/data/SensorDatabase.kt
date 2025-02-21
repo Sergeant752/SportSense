@@ -5,7 +5,7 @@ import androidx.room.*
 import androidx.room.migration.Migration
 import androidx.sqlite.db.SupportSQLiteDatabase
 
-@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 6, exportSchema = true)
+@Database(entities = [SensorData::class, User::class, ChatMessage::class], version = 7, exportSchema = true)
 abstract class SensorDatabase : RoomDatabase() {
     abstract fun sensorDao(): SensorDao
     abstract fun userDao(): UserDao
@@ -22,7 +22,7 @@ abstract class SensorDatabase : RoomDatabase() {
                     SensorDatabase::class.java,
                     "sensor_database"
                 )
-                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6)
+                    .addMigrations(MIGRATION_4_5, MIGRATION_5_6, MIGRATION_6_7)
                     .fallbackToDestructiveMigrationOnDowngrade()
                     .build()
                 INSTANCE = instance
@@ -39,7 +39,13 @@ abstract class SensorDatabase : RoomDatabase() {
 
         val MIGRATION_5_6 = object : Migration(5, 6) {
             override fun migrate(database: SupportSQLiteDatabase) {
-                database.execSQL("ALTER TABLE chat_messages ADD COLUMN is_read INTEGER DEFAULT 0 NOT NULL") // 🔹 Korrekt kolumnnamn
+                database.execSQL("ALTER TABLE chat_messages ADD COLUMN is_read INTEGER DEFAULT 0 NOT NULL") // 🔹 Se till att kolumnnamnet stämmer
+            }
+        }
+
+        val MIGRATION_6_7 = object : Migration(6, 7) {
+            override fun migrate(database: SupportSQLiteDatabase) {
+                // 🔹 Förbered för framtida ändringar här, just nu behövs inget.
             }
         }
     }

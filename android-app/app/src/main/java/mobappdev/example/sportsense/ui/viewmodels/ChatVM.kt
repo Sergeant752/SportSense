@@ -2,17 +2,22 @@ package mobappdev.example.sportsense.ui.viewmodels
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
+import androidx.lifecycle.LiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.ChatDao
 import mobappdev.example.sportsense.data.ChatMessage
 import mobappdev.example.sportsense.data.SensorDatabase
+import mobappdev.example.sportsense.notifications.NotificationHelper
 
 class ChatVM(application: Application) : AndroidViewModel(application) {
     private val chatDao: ChatDao = SensorDatabase.getDatabase(application).chatDao()
+    private val _unreadMessageCount = chatDao.getUnreadMessageCount("").asLiveData()
 
-    fun getMessagesForUser(username: String) = chatDao.getMessagesForUser(username).asLiveData()
+    fun getMessagesForUser(username: String): LiveData<List<ChatMessage>> {
+        return chatDao.getMessagesForUser(username).asLiveData()
+    }
 
     fun sendMessage(sender: String, recipient: String, message: String) {
         val chatMessage = ChatMessage(
@@ -24,6 +29,25 @@ class ChatVM(application: Application) : AndroidViewModel(application) {
         )
         viewModelScope.launch {
             chatDao.insertMessage(chatMessage)
+            updateUnreadMessageCount(recipient)
+            //NotificationHelper.sendNotification(context, "New message from $sender", message)
+        }
+    }
+
+    fun getUnreadMessageCount(username: String): LiveData<Int> {
+        return chatDao.getUnreadMessageCount(username).asLiveData()
+    }
+
+    private fun updateUnreadMessageCount(username: String) {
+        viewModelScope.launch {
+            chatDao.getUnreadMessageCount(username)
+        }
+    }
+
+    fun markMessagesAsRead(username: String) {
+        viewModelScope.launch {
+            chatDao.markMessagesAsRead(username)
+            updateUnreadMessageCount(username)
         }
     }
 
@@ -37,14 +61,7 @@ class ChatVM(application: Application) : AndroidViewModel(application) {
                 else -> return@launch
             }
             chatDao.clearChatForUser(username, timeLimit)
-        }
-    }
-
-    fun getUnreadMessageCount(username: String) = chatDao.getUnreadMessageCount(username).asLiveData()
-
-    fun markMessagesAsRead(username: String) {
-        viewModelScope.launch {
-            chatDao.markMessagesAsRead(username)
+            updateUnreadMessageCount(username)
         }
     }
 }
