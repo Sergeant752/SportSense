@@ -33,6 +33,15 @@ fun ChatScreen(chatVM: ChatVM, userViewModel: UserViewModel, navController: NavC
     var selectedRecipient by remember { mutableStateOf<String?>(null) }
     var clearChatMenuExpanded by remember { mutableStateOf(false) }
 
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            Toast.makeText(context, "Sign in/Register to access this page", Toast.LENGTH_LONG).show()
+            navController.navigate("login")
+        }
+    }
+    if (!isLoggedIn) return
+
     Column(
         modifier = Modifier
             .fillMaxSize()
