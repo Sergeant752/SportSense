@@ -12,13 +12,15 @@ import mobappdev.example.sportsense.ui.components.TopBar
 import mobappdev.example.sportsense.ui.navigation.NavGraph
 import mobappdev.example.sportsense.ui.theme.AppTheme
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
+import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContent {
-            AppTheme {  // Använder vårt mörkblåa tema nu!
+            AppTheme {
                 val sensorViewModel = SensorVM(application = application)
+                val userViewModel = UserViewModel(application = application)
                 val navController = rememberNavController()
 
                 Scaffold(
@@ -26,7 +28,11 @@ class MainActivity : ComponentActivity() {
                     bottomBar = { BottomNavBar(navController) }
                 ) { innerPadding ->
                     Box(modifier = Modifier.padding(innerPadding)) {
-                        NavGraph(navController = navController, sensorVM = sensorViewModel)
+                        NavGraph(
+                            navController = navController,
+                            sensorVM = sensorViewModel,
+                            userViewModel = userViewModel
+                        )
                     }
                 }
             }

@@ -13,13 +13,39 @@ import androidx.navigation.navArgument
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.ui.screens.*
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
+import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
 @Composable
-fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
+fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel: UserViewModel) {
     NavHost(
         navController = navController,
-        startDestination = "home"
+        startDestination = "login"
     ) {
+        composable(
+            "login",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) {
+            LoginScreen(
+                navController = navController,
+                userViewModel = userViewModel,
+                onLoginSuccess = { navController.navigate("home") },
+                onNavigateToRegister = { navController.navigate("register") }
+            )
+        }
+
+        composable(
+            "register",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) {
+            RegisterScreen(
+                navController = navController,
+                userViewModel = userViewModel,
+                onRegisterSuccess = { navController.navigate("login") }
+            )
+        }
+
         composable(
             "home",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
@@ -67,7 +93,6 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM) {
             }
             HRGraphScreen(sensorData = sensorData.value)
         }
-
 
         composable(
             route = "monitor/{deviceId}",

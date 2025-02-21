@@ -31,7 +31,6 @@ fun TopBar(title: String) {
             delay(2000)
         }
     }
-
     if (showBar) {
         CenterAlignedTopAppBar(
             modifier = Modifier.shadow(6.dp),

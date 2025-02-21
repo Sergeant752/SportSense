@@ -5,10 +5,11 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 
-@Database(entities = [SensorData::class], version = 2, exportSchema = false)
+@Database(entities = [SensorData::class, User::class], version = 3, exportSchema = false)
 abstract class SensorDatabase : RoomDatabase() {
 
     abstract fun sensorDao(): SensorDao
+    abstract fun userDao(): UserDao
 
     companion object {
         @Volatile
