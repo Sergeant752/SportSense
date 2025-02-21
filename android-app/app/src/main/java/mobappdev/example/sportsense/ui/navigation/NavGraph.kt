@@ -117,7 +117,12 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
         composable("chat") {
             val chatVM: ChatVM = viewModel()
             val username = userViewModel.getCurrentUser() ?: "Guest"
-            ChatScreen(vm = chatVM, navController = navController, username = username)
+            ChatScreen(
+                chatVM = chatVM,
+                userViewModel = userViewModel,
+                navController = navController,
+                username = username
+            )
         }
     }
 }

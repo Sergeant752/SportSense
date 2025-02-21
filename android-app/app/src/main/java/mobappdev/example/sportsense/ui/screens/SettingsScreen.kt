@@ -124,7 +124,7 @@ fun SettingsScreen(navController: NavController,vm: SensorVM, userViewModel: Use
                 ) {
                     Icon(Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Logout", color = Color.Black)
+                    Text("Logout", color = Color.White)
                 }
             }
         }

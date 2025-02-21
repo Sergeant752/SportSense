@@ -3,6 +3,7 @@ package mobappdev.example.sportsense.ui.viewmodels
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
@@ -58,5 +59,9 @@ class UserViewModel(application: Application) : AndroidViewModel(application) {
 
     fun getCurrentUser(): String? {
         return _currentUser.value?.username
+    }
+
+    fun getAllUsers(): Flow<List<User>> {
+        return userDao.getAllUsers()
     }
 }
