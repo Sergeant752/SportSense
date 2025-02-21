@@ -115,22 +115,19 @@ fun SettingsScreen(navController: NavController,vm: SensorVM, userViewModel: Use
                     checked = autoClearHistoryEnabled,
                     onCheckedChange = { autoClearHistoryEnabled = it }
                 )
-
-                // ✅ Uppdaterad Backup-knapp
                 Button(
                     onClick = {
-                        coroutineScope.launch { // Starta coroutine
-                            val data = vm.getAllSensorData()  // Hämta data via ViewModel
-                            val filePath = SensorStorage.exportSensorDataAsJSON(context, data)
-                            Toast.makeText(context, "Backup created at $filePath", Toast.LENGTH_SHORT).show()
+                        userViewModel.logoutUser() // Anropa logout-funktionen
+                        navController.navigate("login") {
+                            popUpTo("login") { inclusive = true } // Rensar backstack så att användaren inte kan gå tillbaka
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF3F51B5)),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.Red),
                     modifier = Modifier.fillMaxWidth()
                 ) {
-                    Icon(Icons.Default.Backup, contentDescription = "Backup", tint = Color.White)
+                    Icon(Icons.Default.ExitToApp, contentDescription = "Logout", tint = Color.White)
                     Spacer(modifier = Modifier.width(8.dp))
-                    Text("Backup sensor data", color = Color.White)
+                    Text("Logout", color = Color.Black)
                 }
             }
         }
