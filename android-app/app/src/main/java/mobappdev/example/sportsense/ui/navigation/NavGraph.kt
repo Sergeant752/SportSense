@@ -103,5 +103,13 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             val deviceId = backStackEntry.arguments?.getString("deviceId") ?: "Unknown Device"
             MonitorScreen(vm = sensorVM, navController = navController, deviceId = deviceId)
         }
+
+        composable(
+            "others",
+            enterTransition = { fadeIn(animationSpec = tween(300)) },
+            exitTransition = { fadeOut(animationSpec = tween(300)) }
+        ) {
+            OtherScreen(navController = navController, userViewModel = userViewModel)
+        }
     }
 }
