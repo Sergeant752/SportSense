@@ -89,7 +89,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
         ) {
             val sensorData = remember { mutableStateOf<List<SensorData>>(emptyList()) }
             LaunchedEffect(Unit) {
-                sensorData.value = sensorVM.getAllSensorData() // Hämta hjärtfrekvensdata i en coroutine
+                sensorData.value = sensorVM.getAllSensorData()
             }
             HRGraphScreen(sensorData = sensorData.value)
         }

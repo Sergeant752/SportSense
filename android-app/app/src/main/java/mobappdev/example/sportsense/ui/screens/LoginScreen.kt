@@ -19,8 +19,8 @@ import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
-    navController: NavController,  // Lägg till denna
-    userViewModel: UserViewModel,  // Lägg till denna
+    navController: NavController,
+    userViewModel: UserViewModel,
     onLoginSuccess: () -> Unit,
     onNavigateToRegister: () -> Unit
 ) {

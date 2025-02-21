@@ -21,14 +21,14 @@ import mobappdev.example.sportsense.ui.theme.LightBlue40
 
 val BottomNavGradient = Brush.verticalGradient(
     colors = listOf(
-        Color(0xFF1B1F3B),  // Mörkblå-lila (matchar skärmarnas nedre del)
-        Color(0xFF0D47A1)   // Djup blå (samma som övergången på skärmen)
+        Color(0xFF1B1F3B),
+        Color(0xFF0D47A1)
     )
 )
 
 val HomeColor = LightBlue40
-val HistoryColor = Color.Magenta  // Orange
-val SettingsColor = Color(0xFF4CAF50)  // Grön
+val HistoryColor = Color.Magenta
+val SettingsColor = Color(0xFF4CAF50)
 
 sealed class Screen(val route: String, val icon: ImageVector, val label: String, val color: Color) {
     object Home : Screen("home", Icons.Filled.Home, "Home", HomeColor)
@@ -43,11 +43,11 @@ fun BottomNavBar(navController: NavController) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .background(BottomNavGradient) // 🌟 Använd gradienten
+            .background(BottomNavGradient)
     ) {
         NavigationBar(
-            containerColor = Color.Transparent, // Gör NavigationBar transparent för att visa gradienten
-            tonalElevation = 0.dp, // Ta bort skuggor för mjukare övergång
+            containerColor = Color.Transparent,
+            tonalElevation = 0.dp,
             modifier = Modifier.fillMaxWidth()
         ) {
             val items = listOf(Screen.Home, Screen.History, Screen.Settings)
@@ -62,7 +62,7 @@ fun BottomNavBar(navController: NavController) {
                         Icon(
                             screen.icon,
                             contentDescription = screen.label,
-                            tint = animatedColor, // 🌟 Färgen blir mer intensiv när vald
+                            tint = animatedColor,
                             modifier = Modifier.scale(animatedSize)
                         )
                     },

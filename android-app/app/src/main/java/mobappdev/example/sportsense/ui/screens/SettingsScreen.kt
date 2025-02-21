@@ -1,6 +1,5 @@
 package mobappdev.example.sportsense.ui.screens
 
-import android.content.Context
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -19,8 +18,6 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import kotlinx.coroutines.launch
-import mobappdev.example.sportsense.data.SensorStorage
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
@@ -52,9 +49,9 @@ fun SettingsScreen(navController: NavController,vm: SensorVM, userViewModel: Use
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF0D47A1),  // Djup blå
-                        Color(0xFF311B92),  // Mörk lila-blå
-                        Color(0xFF1B1F3B)   // Nästan svart
+                        Color(0xFF0D47A1),
+                        Color(0xFF311B92),
+                        Color(0xFF1B1F3B)
                     )
                 )
             )
@@ -117,9 +114,9 @@ fun SettingsScreen(navController: NavController,vm: SensorVM, userViewModel: Use
                 )
                 Button(
                     onClick = {
-                        userViewModel.logoutUser() // Anropa logout-funktionen
+                        userViewModel.logoutUser()
                         navController.navigate("login") {
-                            popUpTo("login") { inclusive = true } // Rensar backstack så att användaren inte kan gå tillbaka
+                            popUpTo("login") { inclusive = true }
                         }
                     },
                     colors = ButtonDefaults.buttonColors(containerColor = Color.Red),

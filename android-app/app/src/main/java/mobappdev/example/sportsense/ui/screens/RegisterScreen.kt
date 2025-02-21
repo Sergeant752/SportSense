@@ -18,8 +18,8 @@ import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
 @Composable
 fun RegisterScreen(
-    navController: NavController,  // Lägg till denna
-    userViewModel: UserViewModel,  // Lägg till denna
+    navController: NavController,
+    userViewModel: UserViewModel,
     onRegisterSuccess: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }

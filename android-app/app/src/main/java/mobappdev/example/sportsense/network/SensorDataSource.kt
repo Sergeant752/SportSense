@@ -9,7 +9,7 @@ import java.net.HttpURLConnection
 import java.net.URL
 
 object SensorDataSource {
-    private const val BASE_URL = "https://example.com/api/sensordata" // Uppdatera med API-URL
+    private const val BASE_URL = "https://example.com/api/sensordata"
 
     suspend fun fetchSensorData(): Result<SensorData> {
         val url = URL(BASE_URL)
@@ -20,7 +20,6 @@ object SensorDataSource {
                 val inputStream = connection.inputStream
                 val json = inputStream.bufferedReader().use { it.readText() }
 
-                // Deserialisera JSON till SensorData-objekt
                 val data = Gson().fromJson(json, SensorData::class.java)
 
                 Result.Success(data)

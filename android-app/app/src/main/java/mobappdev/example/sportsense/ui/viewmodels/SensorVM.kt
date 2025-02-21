@@ -70,17 +70,17 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
     }
 
     suspend fun exportDataAsCSV(context: Context): String {
-        val data = dao.getAllSensorData()  // Hämta data från Room
+        val data = dao.getAllSensorData()
         return SensorStorage.exportSensorDataAsCSV(context, data)
     }
 
     suspend fun exportDataAsJSON(context: Context): String {
-        val data = dao.getAllSensorData()  // Hämta data från Room
+        val data = dao.getAllSensorData()
         return SensorStorage.exportSensorDataAsJSON(context, data)
     }
 
     suspend fun sendDataToPython(context: Context) {
-        val data = getAllSensorData()  // Hämta all historisk data från databasen
+        val data = getAllSensorData()
         try {
             val response = RetrofitInstance.api.analyzeData(data)
             if (response.isSuccessful && response.body() != null) {
@@ -96,7 +96,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
                             gyroX = record.gyroX,
                             gyroY = record.gyroY,
                             gyroZ = record.gyroZ,
-                            movementDetected = record.movementDetected ?: "No movement"  // Uppdaterat fält
+                            movementDetected = record.movementDetected ?: "No movement"
                         )
                         dao.insertSensorData(analyzedRecord)
                     }
@@ -130,7 +130,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
                             gyroX = record.gyroX,
                             gyroY = record.gyroY,
                             gyroZ = record.gyroZ,
-                            movementDetected = record.movementDetected ?: "No movement"  // Uppdaterat fält
+                            movementDetected = record.movementDetected ?: "No movement"
                         )
                         dao.insertSensorData(analyzedRecord)
                     }
@@ -152,7 +152,7 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
 
     suspend fun downloadModel(context: Context) {
         try {
-            val response = RetrofitInstance.api.downloadModel().execute() // 🚀 Kör requesten direkt
+            val response = RetrofitInstance.api.downloadModel().execute()
 
             if (response.isSuccessful && response.body() != null) {
                 val file = File(context.filesDir, "model.pkl")

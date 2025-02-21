@@ -113,7 +113,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Green,
-                    contentColor = Color.Black  // Textfärgen blir svart
+                    contentColor = Color.Black
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {
@@ -130,7 +130,7 @@ fun ScanScreen(vm: SensorVM, navController: NavController) {
                 },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = Color.Cyan,
-                    contentColor = Color.Black  // Textfärgen blir svart
+                    contentColor = Color.Black
                 ),
                 modifier = Modifier.fillMaxWidth()
             ) {

@@ -63,6 +63,6 @@ fun createLineChart(context: Context, sensorData: List<SensorData>): LineChart {
     }
 
     chart.data = LineData(lineDataSet)
-    chart.invalidate() // Uppdatera grafen
+    chart.invalidate()
     return chart
 }

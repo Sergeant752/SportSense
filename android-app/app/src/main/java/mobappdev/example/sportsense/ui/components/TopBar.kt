@@ -20,14 +20,14 @@ import java.util.*
 @Composable
 fun TopBar(title: String) {
     var showBar by remember { mutableStateOf(false) }
-    var backgroundColor by remember { mutableStateOf(Color(0xFF0D47A1)) } // Startfärg
+    var backgroundColor by remember { mutableStateOf(Color(0xFF0D47A1)) }
     LaunchedEffect(Unit) {
         delay(300)
         showBar = true
     }
     LaunchedEffect(Unit) {
         while (true) {
-            backgroundColor = getNextBackgroundColor(backgroundColor) // Byter färg var 2 sek
+            backgroundColor = getNextBackgroundColor(backgroundColor)
             delay(2000)
         }
     }
@@ -51,7 +51,7 @@ fun TopBar(title: String) {
                         color = Color.White,
                         modifier = Modifier.weight(1f)
                     )
-                    CurrentTime() // Liveklocka till höger
+                    CurrentTime()
                 }
             },
             actions = {
@@ -72,8 +72,8 @@ fun TopBar(title: String) {
 
 fun getNextBackgroundColor(currentColor: Color): Color {
     val colors = listOf(
-        Color(0xFF0D47A1),  // Djup blå
-        Color(0xFF311B92),  // Mörk lila-blå
+        Color(0xFF0D47A1),
+        Color(0xFF311B92),
         Color(0xFF001F3F)
     )
     return colors[(colors.indexOf(currentColor) + 1) % colors.size]

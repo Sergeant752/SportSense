@@ -25,7 +25,7 @@ fun MainScreen(vm: SensorVM, userViewModel: UserViewModel, navController: NavCon
     val connectedDevices by vm.connectedDevices.collectAsState()
     val connectedDevice by vm.currentConnectedDevice.collectAsState()
 
-    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()  // 🔹 Använd collectAsState() här
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
     val context = LocalContext.current
 
     LaunchedEffect(isLoggedIn) {
@@ -43,9 +43,9 @@ fun MainScreen(vm: SensorVM, userViewModel: UserViewModel, navController: NavCon
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF0D47A1),  // Djup blå
-                        Color(0xFF311B92),  // Mörk lila-blå
-                        Color(0xFF1B1F3B)   // Nästan svart
+                        Color(0xFF0D47A1),
+                        Color(0xFF311B92),
+                        Color(0xFF1B1F3B)
                     )
                 )
             ),
@@ -61,7 +61,7 @@ fun MainScreen(vm: SensorVM, userViewModel: UserViewModel, navController: NavCon
             Text(
                 text = "Explore",
                 style = MaterialTheme.typography.headlineSmall,
-                color = Color.Yellow  // Textfärg ändrad till gul
+                color = Color.Yellow
             )
             Spacer(modifier = Modifier.height(16.dp))
 

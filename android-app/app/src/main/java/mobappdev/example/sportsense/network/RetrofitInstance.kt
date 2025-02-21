@@ -8,12 +8,12 @@ import java.security.cert.X509Certificate
 import javax.net.ssl.*
 
 object RetrofitInstance {
-    private const val BASE_URL = "https://192.168.1.229:5000/"  // HTTPS istället för HTTP
+    private const val BASE_URL = "https://192.168.1.229:5000/"
 
     private val retrofit: Retrofit = Retrofit.Builder()
         .baseUrl(BASE_URL)
         .addConverterFactory(GsonConverterFactory.create())
-        .client(getUnsafeOkHttpClient())  // Använd OkHttpClient som accepterar självsignerat certifikat
+        .client(getUnsafeOkHttpClient())
         .build()
 
     val api: RetrofitService by lazy {

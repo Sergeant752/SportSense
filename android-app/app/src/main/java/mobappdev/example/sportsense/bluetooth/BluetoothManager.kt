@@ -189,20 +189,20 @@ class BluetoothManager(private val context: Context) {
     }
 
     fun stopHeartRateMeasurement(deviceId: String) {
-        hrDisposables[deviceId]?.dispose() // Stoppar HR-strömmen
-        hrDisposables.remove(deviceId)     // Tar bort referensen
+        hrDisposables[deviceId]?.dispose()
+        hrDisposables.remove(deviceId)
         Log.d("BluetoothManager", "HR-mätning stoppad för enhet: $deviceId")
     }
 
     fun stopAccelerometerMeasurement(deviceId: String) {
-        accDisposables[deviceId]?.dispose() // Stoppar ACC-strömmen
-        accDisposables.remove(deviceId)     // Tar bort referensen
+        accDisposables[deviceId]?.dispose()
+        accDisposables.remove(deviceId)
         Log.d("BluetoothManager", "ACC-mätning stoppad för enhet: $deviceId")
     }
 
     fun stopGyroscopeMeasurement(deviceId: String) {
-        gyroDisposables[deviceId]?.dispose() // Stoppar GYRO-strömmen
-        gyroDisposables.remove(deviceId)     // Tar bort referensen
+        gyroDisposables[deviceId]?.dispose()
+        gyroDisposables.remove(deviceId)
         Log.d("BluetoothManager", "GYRO-mätning stoppad för enhet: $deviceId")
     }
 

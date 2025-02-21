@@ -59,7 +59,7 @@ fun HistoryScreen(navController: NavController, vm: SensorVM, userViewModel: Use
     }
     val backgroundColor = Color.Black
     val cardGradient = Brush.verticalGradient(
-        colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5)) // Blå gradient
+        colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5))
     )
     val textColor = Color.White
     Column(
@@ -68,9 +68,9 @@ fun HistoryScreen(navController: NavController, vm: SensorVM, userViewModel: Use
             .background(
                 Brush.verticalGradient(
                     colors = listOf(
-                        Color(0xFF0D47A1),  // Djup blå
-                        Color(0xFF311B92),  // Mörk lila-blå
-                        Color(0xFF1B1F3B)   // Nästan svart
+                        Color(0xFF0D47A1),
+                        Color(0xFF311B92),
+                        Color(0xFF1B1F3B)
                     )
                 )
             )
