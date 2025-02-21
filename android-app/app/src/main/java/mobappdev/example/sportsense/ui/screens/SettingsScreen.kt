@@ -18,15 +18,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorStorage
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
+import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
 @Composable
-fun SettingsScreen(vm: SensorVM) {
+fun SettingsScreen(navController: NavController,vm: SensorVM, userViewModel: UserViewModel) {
     val context = LocalContext.current
-    val coroutineScope = rememberCoroutineScope() // Hanterar coroutines
-
+    val coroutineScope = rememberCoroutineScope()
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
     var isRealTimeUpdateEnabled by remember { mutableStateOf(true) }
     var isDarkModeEnabled by remember { mutableStateOf(false) }
     var autoConnectEnabled by remember { mutableStateOf(false) }
@@ -35,6 +37,14 @@ fun SettingsScreen(vm: SensorVM) {
     val cardGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5))
     )
+
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            Toast.makeText(context, "Sign in/Register to access this page", Toast.LENGTH_LONG).show()
+            navController.navigate("login")
+        }
+    }
+    if (!isLoggedIn) return
 
     Column(
         modifier = Modifier

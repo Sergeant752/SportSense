@@ -27,20 +27,29 @@ import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.data.SensorData
 import mobappdev.example.sportsense.data.SensorDatabase
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
+import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 import java.text.SimpleDateFormat
 import java.util.*
 
 @Composable
-fun HistoryScreen(navController: NavController, vm: SensorVM) {
+fun HistoryScreen(navController: NavController, vm: SensorVM, userViewModel: UserViewModel) {
     val context = LocalContext.current
     val db = SensorDatabase.getDatabase(context)
     val dao = db.sensorDao()
     val coroutineScope = rememberCoroutineScope()
-
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
     var sensorHistory by remember { mutableStateOf(listOf<SensorData>()) }
     var isFilterVisible by remember { mutableStateOf(false) }
     var dateFilter by remember { mutableStateOf("") }
     var hrFilter by remember { mutableStateOf("") }
+
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            Toast.makeText(context, "Sign in/Register to access this page", Toast.LENGTH_LONG).show()
+            navController.navigate("login")
+        }
+    }
+    if (!isLoggedIn) return
 
     LaunchedEffect(Unit) {
         sensorHistory = dao.getAllSensorData()
@@ -48,13 +57,11 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
             vm.fetchAnalyzedData(context)
         }
     }
-
     val backgroundColor = Color.Black
     val cardGradient = Brush.verticalGradient(
         colors = listOf(Color(0xFF1976D2), Color(0xFF42A5F5)) // Blå gradient
     )
     val textColor = Color.White
-
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -80,12 +87,10 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
                 color = Color.Yellow
             )
-
             Row {
                 IconButton(onClick = { isFilterVisible = !isFilterVisible }) {
                     Icon(Icons.Default.Search, contentDescription = "Search", tint = Color.Blue)
                 }
-
                 IconButton(onClick = {
                     coroutineScope.launch {
                         dao.clearSensorData()
@@ -94,7 +99,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                 }) {
                     Icon(Icons.Default.Delete, contentDescription = "Clear All", tint = Color.Red)
                 }
-
                 IconButton(onClick = {
                     coroutineScope.launch {
                         sensorHistory = dao.getAllSensorData()
@@ -117,7 +121,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                     }) {
                         Icon(Icons.Default.FileDownload, contentDescription = "Export CSV", tint = Color.Green)
                     }
-
                     IconButton(onClick = {
                         coroutineScope.launch {
                             val jsonPath = vm.exportDataAsJSON(context)
@@ -126,7 +129,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                     }) {
                         Icon(Icons.Default.Code, contentDescription = "Export JSON", tint = Color.Cyan)
                     }
-
                     IconButton(onClick = {
                         coroutineScope.launch {
                             val recordsProcessed = vm.sendDataToPython(context)
@@ -135,7 +137,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                     }) {
                         Icon(Icons.Default.CloudUpload, contentDescription = "Send to Python", tint = Color.Magenta)
                     }
-
                     IconButton(onClick = {
                         coroutineScope.launch {
                             vm.fetchAnalyzedData(context)
@@ -144,7 +145,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                     }) {
                         Icon(Icons.Default.CloudDownload, contentDescription = "Fetch Analysis", tint = Color.Blue)
                     }
-
                     IconButton(onClick = {
                         coroutineScope.launch {
                             vm.downloadModel(context)
@@ -156,7 +156,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                 }
             }
         }
-
         AnimatedVisibility(visible = isFilterVisible) {
             Column(modifier = Modifier.fillMaxWidth().padding(8.dp)) {
                 OutlinedTextField(
@@ -166,7 +165,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                     modifier = Modifier.fillMaxWidth()
                 )
                 Spacer(modifier = Modifier.height(8.dp))
-
                 OutlinedTextField(
                     value = hrFilter,
                     onValueChange = { hrFilter = it },
@@ -175,14 +173,11 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                 )
             }
         }
-
         Spacer(modifier = Modifier.height(16.dp))
-
         val filteredHistory = sensorHistory.filter { data ->
             (dateFilter.isEmpty() || getFormattedDate(data.timestamp).startsWith(dateFilter)) &&
                     (hrFilter.isEmpty() || data.heartRate.toString() == hrFilter)
         }
-
         if (filteredHistory.isEmpty()) {
             Text(text = "No sensor data recorded", color = Color.Yellow)
         } else {
@@ -192,7 +187,6 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
             ) {
                 itemsIndexed(filteredHistory) { index, data ->
                     var isVisible by remember { mutableStateOf(true) }
-
                     AnimatedVisibility(visible = isVisible) {
                         Box(
                             modifier = Modifier
@@ -224,9 +218,7 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                                         color = textColor
                                     )
                                 }
-
                                 Spacer(modifier = Modifier.height(4.dp))
-
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.DirectionsRun, contentDescription = "Accelerometer", tint = Color.Green)
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -236,9 +228,7 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                                         color = textColor
                                     )
                                 }
-
                                 Spacer(modifier = Modifier.height(4.dp))
-
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.RotateRight, contentDescription = "Gyroscope", tint = Color.Yellow)
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -248,9 +238,7 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                                         color = textColor
                                     )
                                 }
-
                                 Spacer(modifier = Modifier.height(4.dp))
-
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.DirectionsRun, contentDescription = "Movement", tint = Color.Cyan)
                                     Spacer(modifier = Modifier.width(8.dp))
@@ -260,10 +248,7 @@ fun HistoryScreen(navController: NavController, vm: SensorVM) {
                                         color = textColor
                                     )
                                 }
-
-
                                 Spacer(modifier = Modifier.height(4.dp))
-
                                 Row(verticalAlignment = Alignment.CenterVertically) {
                                     Icon(Icons.Default.AccessTime, contentDescription = "Timestamp", tint = Color.Magenta)
                                     Spacer(modifier = Modifier.width(8.dp))

@@ -1,5 +1,6 @@
 package mobappdev.example.sportsense.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -11,16 +12,30 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
+import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 
 @Composable
-fun MainScreen(vm: SensorVM, navController: NavController) {
+fun MainScreen(vm: SensorVM, userViewModel: UserViewModel, navController: NavController) {
     val scannedDevices by vm.devices.collectAsState()
     val heartRate by vm.heartRate.collectAsState()
     val connectedDevices by vm.connectedDevices.collectAsState()
     val connectedDevice by vm.currentConnectedDevice.collectAsState()
+
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()  // 🔹 Använd collectAsState() här
+    val context = LocalContext.current
+
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            Toast.makeText(context, "Sign in/Register to access this page", Toast.LENGTH_LONG).show()
+            navController.navigate("login")
+        }
+    }
+
+    if (!isLoggedIn) return
 
     Box(
         modifier = Modifier

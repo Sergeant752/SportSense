@@ -50,7 +50,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             "home",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { MainScreen(vm = sensorVM, navController = navController) }
+        ) { MainScreen(vm = sensorVM, userViewModel = userViewModel ,navController = navController) }
 
         composable(
             "scan",
@@ -62,7 +62,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             "history",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { HistoryScreen(navController = navController, vm = sensorVM  ) }
+        ) { HistoryScreen(navController = navController, vm = sensorVM , userViewModel = userViewModel) }
 
         composable(
             "train_ai",
@@ -80,7 +80,7 @@ fun NavGraph(navController: NavHostController, sensorVM: SensorVM, userViewModel
             "settings",
             enterTransition = { fadeIn(animationSpec = tween(300)) },
             exitTransition = { fadeOut(animationSpec = tween(300)) }
-        ) { SettingsScreen(vm = sensorVM) }
+        ) { SettingsScreen(navController = navController,vm = sensorVM, userViewModel = userViewModel) }
 
         composable(
             "hr_graph",
