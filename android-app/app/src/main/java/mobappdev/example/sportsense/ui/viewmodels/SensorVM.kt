@@ -12,12 +12,14 @@ import mobappdev.example.sportsense.data.SensorStorage
 import mobappdev.example.sportsense.data.SensorDao
 import mobappdev.example.sportsense.data.SensorDatabase
 import mobappdev.example.sportsense.network.RetrofitInstance
+import mobappdev.example.sportsense.utils.TFLiteModel
 import java.io.File
 
 class SensorVM(application: Application) : AndroidViewModel(application) {
 
     private val bluetoothManager = BluetoothManager(application)
     private val dao: SensorDao = SensorDatabase.getDatabase(application).sensorDao()
+    private val tfliteModel = TFLiteModel(application)
 
     val devices: StateFlow<List<String>> = bluetoothManager.scannedDevices
     val heartRate: StateFlow<Int> = bluetoothManager.heartRate
@@ -26,6 +28,17 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
 
     private val _currentConnectedDevice = MutableStateFlow<String?>(null)
     val currentConnectedDevice: StateFlow<String?> = _currentConnectedDevice
+
+    fun predictMovement(sensorData: List<Float>): String {
+        if (sensorData.size != 600 * 7) { // Kontrollera att vi har rätt inputstorlek
+            return "Invalid input size"
+        }
+
+        val predictions = tfliteModel.predict(sensorData.toFloatArray())
+        val predictedIndex = predictions.indices.maxByOrNull { predictions[it] } ?: -1
+
+        return "Predicted movement class: $predictedIndex, Confidence: ${predictions[predictedIndex]}"
+    }
 
     fun startScanning() {
         bluetoothManager.startScan()
@@ -148,8 +161,6 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
-
     suspend fun downloadModel(context: Context) {
         try {
             val response = RetrofitInstance.api.downloadModel().execute()
@@ -171,8 +182,12 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
         }
     }
 
-
     suspend fun getAllSensorData(): List<SensorData> {
         return dao.getAllSensorData()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        tfliteModel.close()
     }
 }

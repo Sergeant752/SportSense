@@ -17,6 +17,7 @@ import androidx.navigation.NavController
 import kotlinx.coroutines.launch
 import mobappdev.example.sportsense.ui.viewmodels.SensorVM
 import mobappdev.example.sportsense.data.SensorDatabase
+import mobappdev.example.sportsense.utils.TFLiteModel
 
 @Composable
 fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) {
@@ -29,6 +30,7 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
     var isMeasuringGYRO by remember { mutableStateOf(false) }
     val db = SensorDatabase.getDatabase(context)
     val dao = db.sensorDao()
+    var predictedMovement by remember { mutableStateOf("No prediction yet") }
 
     Box(
         modifier = Modifier
@@ -64,6 +66,8 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                 text = "GYRO (X:${sensorData.gyroX}, Y:${sensorData.gyroY}, Z:${sensorData.gyroZ})",
                 color = Color.White
             )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(text = "Prediction: $predictedMovement", color = Color.White)
             Spacer(modifier = Modifier.height(16.dp))
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -183,6 +187,23 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     coroutineScope.launch {
                         dao.insertSensorData(sensorData)
                         Toast.makeText(context, "Data saved to Room Database", Toast.LENGTH_SHORT).show()
+                    }
+                }
+                IconWithLabel(
+                    icon = Icons.Default.PlayArrow,
+                    label = "Predict Movement",
+                    color = Color.Yellow
+                ) {
+                    val inputData = listOf(
+                        sensorData.accelX.toFloat(), sensorData.accelY.toFloat(), sensorData.accelZ.toFloat(),
+                        sensorData.gyroX.toFloat(), sensorData.gyroY.toFloat(), sensorData.gyroZ.toFloat(),
+                        sensorData.heartRate.toFloat()
+                    ).flatMap { value -> List(600) { value } } // Skapa en fönsterstorlek på 600
+                    if (inputData.size == 600 * 7) {
+                        predictedMovement = vm.predictMovement(inputData)
+                        Toast.makeText(context, predictedMovement, Toast.LENGTH_SHORT).show()
+                    } else {
+                        Toast.makeText(context, "Not enough data for prediction", Toast.LENGTH_SHORT).show()
                     }
                 }
                 IconWithLabel(
