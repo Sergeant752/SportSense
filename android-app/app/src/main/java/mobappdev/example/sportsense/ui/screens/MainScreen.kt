@@ -78,7 +78,7 @@ fun MainScreen(vm: SensorVM, userViewModel: UserViewModel, navController: NavCon
             } else {
                 Button(
                     onClick = { navController.navigate("scan") },
-                    colors = ButtonDefaults.buttonColors(containerColor = Color.Cyan),
+                    colors = ButtonDefaults.buttonColors(containerColor = Color.White),
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp)
@@ -109,7 +109,7 @@ fun MainScreen(vm: SensorVM, userViewModel: UserViewModel, navController: NavCon
             ButtonWithIcon(
                 text = "Import A.I model",
                 icon = Icons.Filled.Download,
-                color = Color.Blue,
+                color = Color.Cyan,
                 onClick = { navController.navigate("import_model") }
             )
             ButtonWithIcon(

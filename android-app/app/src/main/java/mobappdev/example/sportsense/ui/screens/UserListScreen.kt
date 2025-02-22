@@ -1,5 +1,6 @@
 package mobappdev.example.sportsense.ui.screens
 
+import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
@@ -22,6 +23,15 @@ import mobappdev.example.sportsense.ui.viewmodels.UserViewModel
 fun UserListScreen(navController: NavController, userViewModel: UserViewModel, currentUser: String) {
     val context = LocalContext.current
     val registeredUsers by userViewModel.getAllUsers().collectAsState(initial = emptyList())
+    val isLoggedIn by userViewModel.isLoggedIn.collectAsState()
+
+    LaunchedEffect(isLoggedIn) {
+        if (!isLoggedIn) {
+            Toast.makeText(context, "Sign in/Register to access this page", Toast.LENGTH_LONG).show()
+            navController.navigate("login")
+        }
+    }
+    if (!isLoggedIn) return
 
     Column(
         modifier = Modifier
@@ -45,7 +55,7 @@ fun UserListScreen(navController: NavController, userViewModel: UserViewModel, c
             Spacer(modifier = Modifier.height(8.dp))
             Text(
                 text = "Message a contact",
-                style = MaterialTheme.typography.bodySmall, // Mindre textstil
+                style = MaterialTheme.typography.bodySmall,
                 color = Color.Yellow
             )
         }
@@ -72,7 +82,7 @@ fun UserListScreen(navController: NavController, userViewModel: UserViewModel, c
                             Text(
                                 text = user.username,
                                 style = MaterialTheme.typography.bodyLarge,
-                                color = Color.White
+                                color = Color.Yellow
                             )
                             Spacer(modifier = Modifier.weight(1f))
                             IconButton(
@@ -83,7 +93,7 @@ fun UserListScreen(navController: NavController, userViewModel: UserViewModel, c
                                 Icon(
                                     Icons.Default.Chat,
                                     contentDescription = "Chat",
-                                    tint = Color.White
+                                    tint = Color.Yellow
                                 )
                             }
                         }
