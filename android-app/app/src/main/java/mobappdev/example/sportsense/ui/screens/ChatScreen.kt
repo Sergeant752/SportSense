@@ -138,7 +138,7 @@ fun ChatScreen(
 @Composable
 fun ChatMessageItem(message: ChatMessage, currentUser: String) {
     val isSentByCurrentUser = message.sender == currentUser
-    val backgroundColor = if (isSentByCurrentUser) Color(0xFFB71C1C) else Color(0xFF1976D2   )
+    val backgroundColor = if (isSentByCurrentUser) Color(0xFFB71C1C) else Color(0xFF1976D2)
     val alignment = if (isSentByCurrentUser) Alignment.End else Alignment.Start
 
     Row(
@@ -154,7 +154,7 @@ fun ChatMessageItem(message: ChatMessage, currentUser: String) {
         ) {
             Column(modifier = Modifier.padding(12.dp)) {
                 Text(
-                    text = if (isSentByCurrentUser) "You" else message.sender,
+                    text = if (isSentByCurrentUser) "Me" else message.sender,
                     style = MaterialTheme.typography.bodySmall,
                     color = Color.White
                 )
@@ -176,6 +176,6 @@ fun ChatMessageItem(message: ChatMessage, currentUser: String) {
 }
 
 fun formatTimestamp(timestamp: Long): String {
-    val sdf = SimpleDateFormat("HH:mm dd/MM/yyyy", Locale.getDefault())
+    val sdf = SimpleDateFormat("HH:mm               dd/MM-yyyy", Locale.getDefault())
     return sdf.format(Date(timestamp))
 }
