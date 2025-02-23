@@ -1,6 +1,7 @@
 package mobappdev.example.sportsense.utils
 
 import android.content.Context
+import android.util.Log
 import org.tensorflow.lite.Interpreter
 import java.nio.ByteBuffer
 import java.nio.ByteOrder
@@ -30,17 +31,26 @@ class TFLiteModel(context: Context) {
 
     // Kör inferens på ett nytt sensorvärde
     fun predict(inputData: FloatArray): FloatArray {
-        val inputBuffer = ByteBuffer.allocateDirect(600 * 7 * 4) // 600 time steps, 7 features, 4 bytes per float
-        inputBuffer.order(ByteOrder.nativeOrder())
-        inputBuffer.asFloatBuffer().put(inputData)
+        Log.d("TFLiteModel", "Android Model Input Data: ${inputData.joinToString(", ")}")
 
-        val outputBuffer = ByteBuffer.allocateDirect(21 * 4) // 21 klasser (eller hur många du har)
-        outputBuffer.order(ByteOrder.nativeOrder())
+        val inputBuffer = ByteBuffer.allocateDirect(inputData.size * 4)
+            .order(ByteOrder.nativeOrder())
+            .asFloatBuffer()
+        inputBuffer.put(inputData)
+        inputBuffer.rewind()  // Viktigt: Reset bufferten innan inferens
+
+        val outputBuffer = ByteBuffer.allocateDirect(21 * 4)
+            .order(ByteOrder.nativeOrder())
+            .asFloatBuffer()
 
         interpreter?.run(inputBuffer, outputBuffer)
 
-        val outputArray = FloatArray(21) // Justera beroende på antal klasser
-        outputBuffer.asFloatBuffer().get(outputArray)
+        val outputArray = FloatArray(21)
+        outputBuffer.rewind()  // Viktigt: Reset output innan läsning
+        outputBuffer.get(outputArray)
+
+        Log.d("TFLiteModel", "Android Model Output: ${outputArray.joinToString(", ")}")
+
         return outputArray
     }
 

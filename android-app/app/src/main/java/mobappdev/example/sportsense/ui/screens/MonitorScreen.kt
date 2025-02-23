@@ -1,5 +1,6 @@
 package mobappdev.example.sportsense.ui.screens
 
+import android.util.Log
 import android.widget.Toast
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -31,6 +32,20 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
     val db = SensorDatabase.getDatabase(context)
     val dao = db.sensorDao()
     var predictedMovement by remember { mutableStateOf("No prediction yet") }
+    val sensorHistory = remember { mutableStateListOf<Float>() }
+
+    LaunchedEffect(sensorData) {
+        sensorHistory.addAll(
+            listOf(
+                sensorData.accelX, sensorData.accelY, sensorData.accelZ,
+                sensorData.gyroX, sensorData.gyroY, sensorData.gyroZ,
+                sensorData.heartRate.toFloat()
+            )
+        )
+        while (sensorHistory.size > 4200) {
+            sensorHistory.removeAt(0)
+        }
+    }
 
     Box(
         modifier = Modifier
@@ -194,16 +209,13 @@ fun MonitorScreen(vm: SensorVM, navController: NavController, deviceId: String) 
                     label = "Predict Movement",
                     color = Color.Yellow
                 ) {
-                    val inputData = listOf(
-                        sensorData.accelX.toFloat(), sensorData.accelY.toFloat(), sensorData.accelZ.toFloat(),
-                        sensorData.gyroX.toFloat(), sensorData.gyroY.toFloat(), sensorData.gyroZ.toFloat(),
-                        sensorData.heartRate.toFloat()
-                    ).flatMap { value -> List(600) { value } } // Skapa en fönsterstorlek på 600
-                    if (inputData.size == 600 * 7) {
-                        predictedMovement = vm.predictMovement(inputData)
+                    Log.d("MonitorScreen", "Current sensorHistory size: ${sensorHistory.size}")
+
+                    if (sensorHistory.size == 600 * 7) {
+                        predictedMovement = vm.predictMovement(sensorHistory.toList())
                         Toast.makeText(context, predictedMovement, Toast.LENGTH_SHORT).show()
                     } else {
-                        Toast.makeText(context, "Not enough data for prediction", Toast.LENGTH_SHORT).show()
+                        Toast.makeText(context, "Collecting more data... (${sensorHistory.size}/4200)", Toast.LENGTH_SHORT).show()
                     }
                 }
                 IconWithLabel(

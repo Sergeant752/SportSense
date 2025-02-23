@@ -2,6 +2,7 @@ package mobappdev.example.sportsense.ui.viewmodels
 
 import android.app.Application
 import android.content.Context
+import android.util.Log
 import android.widget.Toast
 import androidx.lifecycle.AndroidViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -14,6 +15,8 @@ import mobappdev.example.sportsense.data.SensorDatabase
 import mobappdev.example.sportsense.network.RetrofitInstance
 import mobappdev.example.sportsense.utils.TFLiteModel
 import java.io.File
+import androidx.lifecycle.viewModelScope
+import kotlinx.coroutines.launch
 
 class SensorVM(application: Application) : AndroidViewModel(application) {
 
@@ -26,15 +29,28 @@ class SensorVM(application: Application) : AndroidViewModel(application) {
     val connectedDevices: StateFlow<List<String>> = bluetoothManager.connectedDevices
     val sensorData: StateFlow<SensorData> = bluetoothManager.sensorData
 
+    init {
+        viewModelScope.launch {
+            bluetoothManager.sensorData.collect { newData ->
+                Log.d("SensorVM", "New sensor data: ACC(${newData.accelX}, ${newData.accelY}, ${newData.accelZ}), GYRO(${newData.gyroX}, ${newData.gyroY}, ${newData.gyroZ}), HR(${newData.heartRate})")
+            }
+        }
+    }
+
     private val _currentConnectedDevice = MutableStateFlow<String?>(null)
     val currentConnectedDevice: StateFlow<String?> = _currentConnectedDevice
 
     fun predictMovement(sensorData: List<Float>): String {
-        if (sensorData.size != 600 * 7) { // Kontrollera att vi har rätt inputstorlek
-            return "Invalid input size"
+        Log.d("SensorVM", "Received data size: ${sensorData.size}")
+
+        if (sensorData.size != 600 * 7) {
+            return "Not enough data for prediction"
         }
 
-        val predictions = tfliteModel.predict(sensorData.toFloatArray())
+        val inputArray = sensorData.toFloatArray()
+        Log.d("SensorVM", "Sensor Data before prediction: ${inputArray.joinToString(", ", limit = 20)}")
+
+        val predictions = tfliteModel.predict(inputArray)
         val predictedIndex = predictions.indices.maxByOrNull { predictions[it] } ?: -1
 
         return "Predicted movement class: $predictedIndex, Confidence: ${predictions[predictedIndex]}"
